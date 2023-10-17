@@ -17,6 +17,26 @@
   margin-bottom: 20px; /* Add some spacing between graphs */
 }
 
+/* Common styles for all screen sizes */
+.filter-container {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.filter {
+  flex: 1; /* Each filter takes an equal portion of the available space */
+  margin: 5px; /* Add some spacing around filters */
+}
+
+
+
+
+
+
+
+
+
+
 /* Apply specific styles for screens with a minimum width of 768px (tablets) */
 @media (min-width: 768px) {
   .row-container {
@@ -29,6 +49,12 @@
   #figure-4 {
     width: 50%; /* Two graphs in a row */
     margin-bottom: 0; /* Remove the spacing between graphs */
+  }
+}
+
+@media (max-width: 768px) {
+  .filter-container {
+    flex-direction: column; /* Change to vertical layout for mobiles and tablets */
   }
 }
 
