@@ -31,6 +31,14 @@ nav_items = [
     ),
 ]
 
+Navbar = dbc.NavbarSimple(
+        children=nav_items,
+        brand="CO-CEAL DASHBOARD",
+        brand_href="#",
+        id="navbar",
+        className="navbar navbar-expand-lg navbar-dark bg-dark p-1 m-1",
+    )
+
 filter_options = html.Div([
     html.Div([
         html.Label("Filter 1"),
@@ -89,25 +97,7 @@ filter_options = html.Div([
     ], className="filter"),
 ], className="filter-container")
 
-Navbar = dbc.NavbarSimple(
-        children=nav_items,
-        brand="CO-CEAL DASHBOARD",
-        brand_href="#",
-        id="navbar",
-        className="navbar navbar-expand-lg navbar-dark bg-dark p-1 m-1",
-        )
-
-
-app.layout = html.Div([
-    html.Link(
-        rel='stylesheet',
-        href='/assets/custom.css'  # Path to your custom CSS file
-        ),
-    Navbar,
-    filter_options,
-    html.Div([
-        html.H1("Welcome to Your Dash App", style={"text-align": "center", "color": text_color}),  # Use the hex color code for text color
-        html.Div([
+wave_1_demographic_figures = html.Div([
             html.Div([
                 dcc.Graph(id="figure-1", className="figure"),
                 dcc.Graph(id="figure-2", className="figure"),
@@ -116,7 +106,25 @@ app.layout = html.Div([
                 dcc.Graph(id="figure-3", className="figure"),
                 dcc.Graph(id="figure-4", className="figure"),
                 ], className="row-container"),
-        ]),
+        ])
+
+
+
+
+
+app.layout = html.Div([
+    html.Link(
+        rel='stylesheet',
+        href='/assets/custom.css'  # Path to your custom CSS file
+        ),
+    html.Script(
+        src='/assets/script.js'  # Path to your JavaScript file
+    ),  
+    Navbar,
+    filter_options,
+    html.Div([
+        html.H1("Welcome to Your Dash App", style={"text-align": "center", "color": text_color}),  # Use the hex color code for text color
+        wave_1_demographic_figures,
     ])
 ])
 

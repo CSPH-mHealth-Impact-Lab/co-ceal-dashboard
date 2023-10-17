@@ -5,6 +5,12 @@
     padding: auto;
     margin: auto;
 }
+
+.navbar-brand {
+    margin-right: 0;
+    margin-left: 0; /* Align the brand name to the left by removing margin-right */
+}
+
 /* Common styles for all screen sizes */
 .row-container {
   display: flex;
@@ -48,10 +54,9 @@
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 767px) {
   .filter-container {
     flex-direction: column; /* Change to vertical layout for mobiles and tablets */
   }
 }
-
 
