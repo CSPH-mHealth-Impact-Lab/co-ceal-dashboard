@@ -3,7 +3,6 @@ import dash_bootstrap_components as dbc
 from dash import html, dcc
 from dash.dependencies import Input, Output
 
-from components.wave_1_components import *
 from components.navbar import *
 from components.filters import *
 
@@ -13,7 +12,7 @@ import os
 load_dotenv()
 
 # Use the 'LUX' theme from Bootstrap for a clean, mobile-friendly design
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.LUX])
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.LUX], use_pages=True)
 
 
 # filter_options = html.Div([
@@ -75,6 +74,9 @@ app = dash.Dash(__name__, external_stylesheets=[dbc.themes.LUX])
 # ], className="filter-container")
 
 
+
+
+
 app.layout = html.Div([
     html.Link(
         rel='stylesheet',
@@ -84,20 +86,10 @@ app.layout = html.Div([
         src='/assets/script.js'  # Path to your JavaScript file
     ),  
     Navbar,
-    wave_1_title,
     filter_options,
-    wave_1_tabs,
+    dash.page_container,
 ])
 
-
-@app.callback(Output("wave-1-content", "children"), [Input("wave-1-tabs", "active_tab")])
-def update_wave_1_tab(selected_tab):
-    print(selected_tab)
-    if selected_tab == "tab-1":
-        return wave_1_figure_groups["tab-2"]
-    elif selected_tab == "tab-2":
-        return wave_1_figure_groups["tab-3"]
-    return wave_1_figure_groups["wave-1-demographics-tab"]
 
 if __name__ == '__main__':
     app.run_server(debug=True)

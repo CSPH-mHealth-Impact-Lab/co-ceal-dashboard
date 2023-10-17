@@ -37,6 +37,7 @@
 .filter {
   flex: 1; /* Each filter takes an equal portion of the available space */
   margin: 5px; /* Add some spacing around filters */
+  text-align: center;
 }
 
 
