@@ -15,66 +15,7 @@ load_dotenv()
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.LUX], use_pages=True)
 
 
-# filter_options = html.Div([
-#     html.Div([
-#         html.Label("Filter 1"),
-#         dcc.Dropdown(
-#             id="filter-1",
-#             options=[
-#                 {"label": "Option 1", "value": "option-1"},
-#                 {"label": "Option 2", "value": "option-2"},
-#                 {"label": "Option 3", "value": "option-3"},
-#                 {"label": "Select All", "value": "select-all"},
-#             ],
-#             multi=True,
-#         ),
-#     ], className="filter"),
-    
-#     html.Div([
-#         html.Label("Filter 2"),
-#         dcc.Dropdown(
-#             id="filter-2",
-#             options=[
-#                 {"label": "Option 1", "value": "option-1"},
-#                 {"label": "Option 2", "value": "option-2"},
-#                 {"label": "Option 3", "value": "option-3"},
-#                 {"label": "Select All", "value": "select-all"},
-#             ],
-#             multi=True,
-#         ),
-#     ], className="filter"),
-    
-#     html.Div([
-#         html.Label("Filter 3"),
-#         dcc.Dropdown(
-#             id="filter-3",
-#             options=[
-#                 {"label": "Option 1", "value": "option-1"},
-#                 {"label": "Option 2", "value": "option-2"},
-#                 {"label": "Option 3", "value": "option-3"},
-#                 {"label": "Select All", "value": "select-all"},
-#             ],
-#             multi=True,
-#         ),
-#     ], className="filter"),
-    
-#     html.Div([
-#         html.Label("Filter 4"),
-#         dcc.Dropdown(
-#             id="filter-4",
-#             options=[
-#                 {"label": "Option 1", "value": "option-1"},
-#                 {"label": "Option 2", "value": "option-2"},
-#                 {"label": "Option 3", "value": "option-3"},
-#                 {"label": "Select All", "value": "select-all"},
-#             ],
-#             multi=True,
-#         ),
-#     ], className="filter"),
-# ], className="filter-container")
-
-
-
+show_hide_button = html.Button("Hide Filters", id="show-hide-button", className="btn btn-danger m-2")
 
 
 app.layout = html.Div([
@@ -86,10 +27,13 @@ app.layout = html.Div([
         src='/assets/script.js'  # Path to your JavaScript file
     ),  
     Navbar,
-    filter_options,
+    show_hide_button, filter_container,
     dash.page_container,
 ])
 
 
+
 if __name__ == '__main__':
     app.run_server(debug=True)
+
+
