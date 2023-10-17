@@ -1,0 +1,35 @@
+/* custom.css */
+.navbar-item {
+    flex-grow: 1;
+    text-align: center;
+}
+/* Common styles for all screen sizes */
+.row-container {
+  display: flex;
+  flex-direction: column;
+}
+
+#figure-1,
+#figure-2,
+#figure-3,
+#figure-4 {
+  width: 100%; /* Each graph takes full width on small screens */
+  margin-bottom: 20px; /* Add some spacing between graphs */
+}
+
+/* Apply specific styles for screens with a minimum width of 768px (tablets) */
+@media (min-width: 768px) {
+  .row-container {
+    flex-direction: row; /* Change to horizontal layout for tablets and larger screens */
+  }
+
+  #figure-1,
+  #figure-2,
+  #figure-3,
+  #figure-4 {
+    width: 50%; /* Two graphs in a row */
+    margin-bottom: 0; /* Remove the spacing between graphs */
+  }
+}
+
+
