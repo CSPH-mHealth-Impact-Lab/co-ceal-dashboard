@@ -1,7 +1,9 @@
 /* custom.css */
 .navbar-item {
-    flex-grow: 1;
     text-align: center;
+    font-size: smaller;
+    padding: auto;
+    margin: auto;
 }
 /* Common styles for all screen sizes */
 .row-container {

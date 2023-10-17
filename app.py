@@ -18,12 +18,17 @@ logo1_url = "https://picsum.photos/seed/picsum/200/300"  # Replace with the URL 
 logo2_url = "https://picsum.photos/seed/picsum/200/300"  # Replace with the URL of your second logo image
 
 nav_items = [
-    dbc.NavItem(dbc.NavLink("Option 1", href="#", className="nav-item active")),
-    dbc.NavItem(dbc.NavLink("Option 2", href="#", className="navbar-item")),
-    dbc.NavItem(dbc.NavLink("Option 3", href="#", className="navbar-item")),
-    dbc.NavItem(dbc.NavLink("Option 4", href="#", className="navbar-item")),
-    dbc.NavItem(dbc.NavLink("Option 5", href="#", className="navbar-item")),
-    dbc.NavItem(dbc.NavLink("Option 6", href="#", className="navbar-item")),
+    dbc.NavItem(dbc.NavLink("Wave 1", href="#", className="navbar-item active")),
+    dbc.NavItem(dbc.NavLink("Wave 2", href="#", className="navbar-item active")),
+    dbc.NavItem(dbc.NavLink("Wave 3", href="#", className="navbar-item active")),
+    dbc.DropdownMenu(
+        label="Cross Wave Analysis",  # Dropdown label
+        children=[
+            dbc.DropdownMenuItem("Option 4", href="#", className="navbar-item"),
+            dbc.DropdownMenuItem("Option 5", href="#", className="navbar-item"),
+            dbc.DropdownMenuItem("Option 6", href="#", className="navbar-item"),
+        ],
+    ),
 ]
 
 filter_options = html.Div([
@@ -84,6 +89,13 @@ filter_options = html.Div([
     ], className="filter"),
 ], className="filter-container")
 
+Navbar = dbc.NavbarSimple(
+        children=nav_items,
+        brand="CO-CEAL DASHBOARD",
+        brand_href="#",
+        id="navbar",
+        className="navbar navbar-expand-lg navbar-dark bg-dark p-1 m-1",
+        )
 
 
 app.layout = html.Div([
@@ -91,13 +103,7 @@ app.layout = html.Div([
         rel='stylesheet',
         href='/assets/custom.css'  # Path to your custom CSS file
         ),
-    dbc.NavbarSimple(
-        children=nav_items,
-        brand="CO-CEAL DASHBOARD",
-        brand_href="#",
-        id="navbar",
-        className="navbar navbar-expand-lg navbar-dark bg-dark",
-        ),
+    Navbar,
     filter_options,
     html.Div([
         html.H1("Welcome to Your Dash App", style={"text-align": "center", "color": text_color}),  # Use the hex color code for text color
