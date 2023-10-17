@@ -24,8 +24,6 @@ nav_items = [
     dbc.NavItem(dbc.NavLink("Option 4", href="#", className="navbar-item")),
     dbc.NavItem(dbc.NavLink("Option 5", href="#", className="navbar-item")),
     dbc.NavItem(dbc.NavLink("Option 6", href="#", className="navbar-item")),
-    dbc.NavItem(html.Img(src=logo1_url, height="50px"), style={'padding-right': '20px'}),
-    dbc.NavItem(html.Img(src=logo2_url, height="50px")),
 ]
 
 filter_options = html.Div([
@@ -104,12 +102,12 @@ app.layout = html.Div([
         html.H1("Welcome to Your Dash App", style={"text-align": "center", "color": text_color}),  # Use the hex color code for text color
         html.Div([
             html.Div([
-                dcc.Graph(id="figure-1"),
-                dcc.Graph(id="figure-2"),
+                dcc.Graph(id="figure-1", className="figure"),
+                dcc.Graph(id="figure-2", className="figure"),
                 ], className="row-container"),
             html.Div([
-                dcc.Graph(id="figure-3"),
-                dcc.Graph(id="figure-4"),
+                dcc.Graph(id="figure-3", className="figure"),
+                dcc.Graph(id="figure-4", className="figure"),
                 ], className="row-container"),
         ]),
     ])

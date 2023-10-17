@@ -9,10 +9,7 @@
   flex-direction: column;
 }
 
-#figure-1,
-#figure-2,
-#figure-3,
-#figure-4 {
+.figure {
   width: 100%; /* Each graph takes full width on small screens */
   margin-bottom: 20px; /* Add some spacing between graphs */
 }
@@ -43,10 +40,7 @@
     flex-direction: row; /* Change to horizontal layout for tablets and larger screens */
   }
 
-  #figure-1,
-  #figure-2,
-  #figure-3,
-  #figure-4 {
+  .figure {
     width: 50%; /* Two graphs in a row */
     margin-bottom: 0; /* Remove the spacing between graphs */
   }
