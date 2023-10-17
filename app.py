@@ -18,7 +18,7 @@ logo1_url = "https://picsum.photos/seed/picsum/200/300"  # Replace with the URL 
 logo2_url = "https://picsum.photos/seed/picsum/200/300"  # Replace with the URL of your second logo image
 
 nav_items = [
-    dbc.NavItem(dbc.NavLink("Option 1", href="#", className="navbar-item")),
+    dbc.NavItem(dbc.NavLink("Option 1", href="#", className="nav-item active")),
     dbc.NavItem(dbc.NavLink("Option 2", href="#", className="navbar-item")),
     dbc.NavItem(dbc.NavLink("Option 3", href="#", className="navbar-item")),
     dbc.NavItem(dbc.NavLink("Option 4", href="#", className="navbar-item")),
@@ -95,7 +95,8 @@ app.layout = html.Div([
         children=nav_items,
         brand="CO-CEAL DASHBOARD",
         brand_href="#",
-        style={"background-color": navbar_bg_color, "color": text_color},
+        id="navbar",
+        className="navbar navbar-expand-lg navbar-dark bg-dark",
         ),
     filter_options,
     html.Div([
