@@ -80,4 +80,3 @@ def toggle_filter_visibility(n_clicks):
     else:
         return {"display": "none"}, "Show Filters", "btn btn-primary m-2"
     
-filter_block = show_hide_button, filter_container
