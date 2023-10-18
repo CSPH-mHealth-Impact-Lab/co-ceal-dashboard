@@ -15,9 +15,6 @@ load_dotenv()
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.LUX], use_pages=True)
 
 
-show_hide_button = html.Button("Hide Filters", id="show-hide-button", className="btn btn-danger m-2")
-
-
 app.layout = html.Div([
     html.Link(
         rel='stylesheet',
@@ -27,7 +24,7 @@ app.layout = html.Div([
         src='/assets/script.js'  # Path to your JavaScript file
     ),  
     Navbar,
-    show_hide_button, filter_container,
+    show_hide_button,filter_container,
     dash.page_container,
 ])
 

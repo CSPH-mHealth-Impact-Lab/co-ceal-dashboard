@@ -21,25 +21,24 @@ wave_2_title = html.Div([
     html.H1("Welcome to Your Dashboard for Wave 2", className="my-custom-title text-center"),
 ])
 
-age_histogram = create_histogram(wave2_df, 'Age', title_text="Age Distribution", num_bins=20)
+age_histogram = create_histogram(wave2_df, 'Age', title_text="Age Distribution", num_bins=15)
 lang_pie_chart = create_pie_chart(wave2_df, 'Language', 'counter_column', 'Language')
-
+community_pie_chart = create_pie_chart(wave2_df, 'Community', 'counter_column', 'Community')
+gender_bar_chart = create_horizontal_bar_chart(wave2_df, 'Gender', 'Gender')
 
 import plotly.express as px
 wave_2_demographic_figures = html.Div([
             html.Div([
                 dcc.Graph(id="figure-1", className="figure",figure=age_histogram,
-                          config={"displayModeBar": displayModeBar, "displaylogo": displayModeBar},),
+                          config={"displayModeBar": True, "displaylogo": displayModeBar},),
                 dcc.Graph(id="figure-2", className="figure",figure=lang_pie_chart,
                           config={"displayModeBar": displayModeBar, "displaylogo": displayModeBar},),
                 ], className="row-container"),
             html.Div([
-                dcc.Graph(id="figure-3", className="figure",
-                          config={"displayModeBar": displayModeBar, "displaylogo": displayModeBar},
-                        figure=get_figure_layout("wave 2 tab 1 fig 3"),),
-                dcc.Graph(id="figure-4", className="figure",
-                          config={"displayModeBar": displayModeBar, "displaylogo": displayModeBar},
-                        figure=get_figure_layout("wave 2 tab 1 fig 4"),),
+                dcc.Graph(id="figure-3", className="figure", figure = community_pie_chart,
+                          config={"displayModeBar": displayModeBar, "displaylogo": displayModeBar},),
+                dcc.Graph(id="figure-4", className="figure", figure = gender_bar_chart,
+                          config={"displayModeBar": displayModeBar, "displaylogo": displayModeBar},),
                 ], className="row-container"),
         ])
 
