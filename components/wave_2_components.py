@@ -1,5 +1,5 @@
 import dash_bootstrap_components as dbc
-from dash import html, dcc
+from dash import html, dcc, callback, Input, Output
 
 import pandas as pd
 from custom_functions.custom_functions import *
@@ -26,18 +26,18 @@ lang_pie_chart = create_pie_chart(wave2_df, 'Language', 'counter_column', 'Langu
 community_pie_chart = create_pie_chart(wave2_df, 'Community', 'counter_column', 'Community')
 gender_bar_chart = create_horizontal_bar_chart(wave2_df, 'Gender', 'Gender')
 
-import plotly.express as px
+
 wave_2_demographic_figures = html.Div([
             html.Div([
-                dcc.Graph(id="figure-1", className="figure",figure=age_histogram,
+                dcc.Graph(id="wave-2-age-histogram", className="figure",figure=age_histogram,
                           config={"displayModeBar": True, "displaylogo": displayModeBar},),
-                dcc.Graph(id="figure-2", className="figure",figure=lang_pie_chart,
+                dcc.Graph(id="wave-2-lang-pie-chart", className="figure",figure=lang_pie_chart,
                           config={"displayModeBar": displayModeBar, "displaylogo": displayModeBar},),
                 ], className="row-container"),
             html.Div([
-                dcc.Graph(id="figure-3", className="figure", figure = community_pie_chart,
+                dcc.Graph(id="wave-2-community-pie-chart", className="figure", figure = community_pie_chart,
                           config={"displayModeBar": displayModeBar, "displaylogo": displayModeBar},),
-                dcc.Graph(id="figure-4", className="figure", figure = gender_bar_chart,
+                dcc.Graph(id="wave-2-gender-bar-chart", className="figure", figure = gender_bar_chart,
                           config={"displayModeBar": displayModeBar, "displaylogo": displayModeBar},),
                 ], className="row-container"),
         ])
@@ -101,3 +101,4 @@ wave_2_tabs = html.Div(
         html.Div(id="wave-2-content"),
     ]
 )
+

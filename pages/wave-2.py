@@ -21,3 +21,20 @@ def update_wave_2_tab(selected_tab):
     elif selected_tab == "tab-2":
         return wave_2_figure_groups["tab-3"]
     return wave_2_figure_groups["wave-2-demographics-tab"]
+
+def apply_filter_for_figure(data, selected_data, column_name):
+    if selected_data is None:
+        return data  # No filter applied, return the original data
+
+    # Extract the selected data range
+    x_range = selected_data["x"]
+    
+    if x_range is not None and len(x_range) == 2:
+        min_value, max_value = x_range
+        
+        # Apply the filter based on the selected range
+        filtered_data = data[(data[column_name] >= min_value) & (data[column_name] <= max_value)]
+        return filtered_data
+
+    return data
+
