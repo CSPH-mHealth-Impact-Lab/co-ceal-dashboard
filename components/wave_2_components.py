@@ -1,46 +1,37 @@
 import dash_bootstrap_components as dbc
 from dash import html, dcc
 
-from dotenv import load_dotenv
+import pandas as pd
+from custom_functions.custom_functions import *
 import os
-
+from dotenv import load_dotenv
 load_dotenv()
+
+wave2_df = pd.read_excel("data/wave_2.xlsx",engine='openpyxl')
 
 displayModeBar_str = os.environ.get("displayModeBar", "True")
 displayModeBar = displayModeBar_str.lower() == "true"
 displaylogo_str = os.environ.get("displaylogo", "True")
 displaylogo = displaylogo_str.lower() == "true"
 
-graph_title_font_color = os.environ.get("graph_title_font_color", "#333")
-graph_title_font_size = int(os.environ.get("graph_title_font_size", 18))
+
 
 
 wave_2_title = html.Div([
     html.H1("Welcome to Your Dashboard for Wave 2", className="my-custom-title text-center"),
 ])
 
+age_histogram = create_histogram(wave2_df, 'Age', title_text="Age Distribution", num_bins=20)
+lang_pie_chart = create_pie_chart(wave2_df, 'Language', 'counter_column', 'Language')
 
-def get_figure_layout(title, font_color=graph_title_font_color, font_size=graph_title_font_size):
-    return {
-        "layout": {
-            "title": {
-                "text": title,
-                "font": {
-                    "size": font_size,  # Customize font size as needed
-                    "color": font_color,  # Customize font color (default is #333)
-                },
-            },
-        },
-    }
 
+import plotly.express as px
 wave_2_demographic_figures = html.Div([
             html.Div([
-                dcc.Graph(id="figure-1", className="figure",
-                          config={"displayModeBar": displayModeBar, "displaylogo": displayModeBar},
-                        figure=get_figure_layout("wave 2 tab 1 fig 1"),),
-                dcc.Graph(id="figure-2", className="figure",
-                          config={"displayModeBar": displayModeBar, "displaylogo": displayModeBar},
-                        figure=get_figure_layout("wave 2 tab 1 fig 2"),),
+                dcc.Graph(id="figure-1", className="figure",figure=age_histogram,
+                          config={"displayModeBar": displayModeBar, "displaylogo": displayModeBar},),
+                dcc.Graph(id="figure-2", className="figure",figure=lang_pie_chart,
+                          config={"displayModeBar": displayModeBar, "displaylogo": displayModeBar},),
                 ], className="row-container"),
             html.Div([
                 dcc.Graph(id="figure-3", className="figure",

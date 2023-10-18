@@ -1,7 +1,10 @@
 import dash
 from dash import html, dcc, callback, Input, Output
 
+
 from components.wave_2_components import *
+
+
 
 dash.register_page(__name__)
 
