@@ -7,6 +7,7 @@ import os
 from dotenv import load_dotenv
 load_dotenv()
 
+
 wave2_df = pd.read_excel("data/wave_2.xlsx",engine='openpyxl')
 
 displayModeBar_str = os.environ.get("displayModeBar", "True")
@@ -21,23 +22,23 @@ wave_2_title = html.Div([
     html.H1("Welcome to Your Dashboard for Wave 2", className="my-custom-title text-center"),
 ])
 
-age_histogram = create_histogram(wave2_df, 'Age', title_text="Age Distribution", num_bins=15)
-lang_pie_chart = create_pie_chart(wave2_df, 'Language', 'counter_column', 'Language')
-community_pie_chart = create_pie_chart(wave2_df, 'Community', 'counter_column', 'Community')
-gender_bar_chart = create_horizontal_bar_chart(wave2_df, 'Gender', 'Gender')
+wave_2_age_histogram = create_histogram(wave2_df, 'Age', title_text="Age Distribution", num_bins=15)
+wave_2_lang_pie_chart = create_pie_chart(wave2_df, 'Language', 'counter_column', 'Language')
+wave_2_community_pie_chart = create_pie_chart(wave2_df, 'Community', 'counter_column', 'Community')
+wave_2_gender_bar_chart = create_horizontal_bar_chart(wave2_df, 'Gender', 'Gender')
 
 
 wave_2_demographic_figures = html.Div([
             html.Div([
-                dcc.Graph(id="wave-2-age-histogram", className="figure",figure=age_histogram,
+                dcc.Graph(id="wave-2-age-histogram", className="figure",figure=wave_2_age_histogram,
                           config={"displayModeBar": True, "displaylogo": displayModeBar},),
-                dcc.Graph(id="wave-2-lang-pie-chart", className="figure",figure=lang_pie_chart,
+                dcc.Graph(id="wave-2-lang-pie-chart", className="figure",figure=wave_2_lang_pie_chart,
                           config={"displayModeBar": displayModeBar, "displaylogo": displayModeBar},),
                 ], className="row-container"),
             html.Div([
-                dcc.Graph(id="wave-2-community-pie-chart", className="figure", figure = community_pie_chart,
+                dcc.Graph(id="wave-2-community-pie-chart", className="figure", figure = wave_2_community_pie_chart,
                           config={"displayModeBar": displayModeBar, "displaylogo": displayModeBar},),
-                dcc.Graph(id="wave-2-gender-bar-chart", className="figure", figure = gender_bar_chart,
+                dcc.Graph(id="wave-2-gender-bar-chart", className="figure", figure = wave_2_gender_bar_chart,
                           config={"displayModeBar": displayModeBar, "displaylogo": displayModeBar},),
                 ], className="row-container"),
         ])
