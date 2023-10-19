@@ -28,6 +28,26 @@ def get_figure_layout(title, font_color=graph_title_font_color, font_size=graph_
 # Function to create a histogram with updated layout
 def create_histogram(data, column, title_text, num_bins=10, graph_title_font_color=graph_title_font_color, graph_title_font_size=graph_title_font_size):
     data_cleaned = data.dropna(subset=[column])
+    fig = px.histogram(data_cleaned, x=column, nbins=num_bins, labels={column: 'Age'},text_auto=True)
+    
+    # Customize the appearance of the histogram
+    fig.update_traces(marker_color='rgb(93, 92, 244)', marker_line_color='rgb(8,48,107)',
+                      marker_line_width=1.5, opacity=0.9)
+    
+    # Customize the title, font, and layout settings directly
+    fig.update_layout(
+        title_text=title_text,
+        title_font=dict(size=graph_title_font_size, color=graph_title_font_color),
+        xaxis_title='Age',
+        yaxis_title='Count',
+        title_x=0.5,  # Center align the title horizontally
+        title_y=0.95  # Adjust the vertical position of the title
+    )
+
+    return fig
+
+def create_histogram1(data, column, title_text, num_bins=10, graph_title_font_color=graph_title_font_color, graph_title_font_size=graph_title_font_size):
+    data_cleaned = data.dropna(subset=[column])
 
     # Create a histogram using go.Histogram
     fig = go.Figure(go.Histogram(
@@ -117,6 +137,7 @@ def create_horizontal_bar_chart(data, column, title_text, graph_title_font_color
 
     # Customize the font and layout settings
     fig.update_layout(
+        title_text=title_text,
         title_font=dict(size=graph_title_font_size, color=graph_title_font_color),
         xaxis_title='Count',  # Change x-axis label to 'Count'
         yaxis_title='',  # Hide y-axis label
