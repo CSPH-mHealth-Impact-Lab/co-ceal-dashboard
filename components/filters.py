@@ -96,7 +96,7 @@ show_hide_button = html.Button("Show Filters", id="show-hide-button", className=
 filter_container = html.Div([
         
         filter_options,
-    ], id="filter-container", style={"display": "block"})
+    ], id="filter-container", style={"display": "none"})
 
 @callback(
     [Output("filter-container", "style"), Output("show-hide-button", "children"), Output("show-hide-button", "className")],
@@ -107,8 +107,10 @@ def toggle_filter_visibility(n_clicks):
     if n_clicks is None:
         n_clicks = 0
 
-    if n_clicks % 2 == 0:  # Toggle the visibility on even clicks
-        return {"display": "none"}, "Show Filters", "btn btn-primary m-2"  
+    if n_clicks % 2 != 0:  # Toggle the visibility on even clicks
+        # return {"display": "none"}, "Show Filters", "btn btn-primary m-2"
+        return {"display": "block"}, "Hide Filters", "btn btn-danger m-2"  
     else:
-        return {"display": "block"}, "Hide Filters", "btn btn-danger m-2"
+        # return {"display": "block"}, "Hide Filters", "btn btn-danger m-2"
+        return {"display": "none"}, "Show Filters", "btn btn-primary m-2"
     
