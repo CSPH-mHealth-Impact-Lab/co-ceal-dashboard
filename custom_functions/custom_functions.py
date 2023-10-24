@@ -44,6 +44,15 @@ def create_histogram(data, column, title_text, num_bins=10, graph_title_font_col
         title_y=0.95  # Adjust the vertical position of the title
     )
 
+    fig.update_layout(
+        hoverlabel=dict(
+        bgcolor=hover_bgcolor,
+        font_size=hover_font_size,
+        font_family=hover_font_family,
+        font_color = hover_font_color
+    )
+)
+
     return fig
 
 def create_histogram1(data, column, title_text, num_bins=10, graph_title_font_color=graph_title_font_color, graph_title_font_size=graph_title_font_size):
@@ -128,7 +137,7 @@ def create_horizontal_bar_chart(data, column, title_text, graph_title_font_color
         y=counts[column],
         text=[f'{count}<br>({percentage}%)' for count, percentage in zip(counts['Count'], counts['Percentage'])],
         orientation='h',  # Make it a horizontal bar chart
-        hovertemplate="Count: %{x}<br>Percentage: %{percent}<extra></extra> "
+        hovertemplate=" %{label}<br>Count: %{x}<br><extra></extra> "
     ))
 
     # Customize the appearance of the chart
@@ -145,7 +154,14 @@ def create_horizontal_bar_chart(data, column, title_text, graph_title_font_color
         title_y=0.95,  # Adjust the vertical position of the title
         xaxis=dict(range=[0, counts['Count'].sum()])  # Set x-axis scale based on max count
     )
-
+    fig.update_layout(
+        hoverlabel=dict(
+        bgcolor=hover_bgcolor,
+        font_size=hover_font_size,
+        font_family=hover_font_family,
+        font_color = hover_font_color
+    )
+)
     fig.update_traces(texttemplate='%{text}', textposition='outside')
 
     return fig
