@@ -41,6 +41,13 @@
 }
 
 
+.active-tab-styling {
+    text-transform: uppercase;
+    font-weight: bold;
+    font-style: italic;
+    color: #FB79B3;
+}
+
 
 
 

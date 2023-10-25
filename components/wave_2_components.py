@@ -91,9 +91,12 @@ wave_2_figure_groups = {
 wave_2_tabs = html.Div(
     [
         dbc.Tabs([
-            dbc.Tab(label="Demographics", id="wave-2-demographics-tab", className="nav-item"),
-            dbc.Tab(label="Tab 2", id="tab-2", className="nav-item"),
-            dbc.Tab(label="Tab 3", id="tab-3", className="nav-item"),
+            dbc.Tab(label="Demographics", id="wave-2-demographics-tab", className="nav-item",
+                    active_tab_style={"textTransform": "uppercase"}, active_label_style={"color": "#FB79B3"}, active_tab_class_name="fw-bold fst-italic", activeLabelClassName="text-success"),
+            dbc.Tab(label="Tab 2", id="tab-2", className="nav-item",
+                    active_tab_style={"textTransform": "uppercase"}, active_label_style={"color": "#FB79B3"}, active_tab_class_name="fw-bold fst-italic", activeLabelClassName="text-success"),
+            dbc.Tab(label="Tab 3", id="tab-3", className="nav-item",
+                    active_tab_style={"textTransform": "uppercase"}, active_label_style={"color": "#FB79B3"}, active_tab_class_name="fw-bold fst-italic", activeLabelClassName="text-success"),
         ],
             id="wave-2-tabs",
             active_tab="wave-2-demographics-tab",
@@ -103,3 +106,4 @@ wave_2_tabs = html.Div(
     ]
 )
 
+#active_tab_style={"textTransform": "uppercase"}, active_label_style={"color": "#FB79B3"}, active_tab_class_name="fw-bold fst-italic", activeLabelClassName="text-success")
