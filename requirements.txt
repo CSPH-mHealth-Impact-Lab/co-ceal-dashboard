@@ -1,3 +1,4 @@
+pip==23.3
 ansi2html==1.8.0
 certifi==2023.7.22
 charset-normalizer==3.3.0
