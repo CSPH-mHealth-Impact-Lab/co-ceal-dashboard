@@ -5,6 +5,7 @@ import pandas as pd
 from custom_functions.custom_functions import *
 import os
 from dotenv import load_dotenv
+import plotly.express as px
 load_dotenv()
 
 
@@ -24,7 +25,7 @@ wave_2_title = html.Div([
 
 wave_2_age_histogram = create_histogram(wave2_df, 'Age', title_text="Age Distribution", num_bins=15)
 wave_2_lang_pie_chart = create_pie_chart(wave2_df, 'Language', 'counter_column', 'Language')
-wave_2_community_pie_chart = create_pie_chart(wave2_df, 'Community', 'counter_column', 'Community')
+wave_2_community_icicle_chart = create_icicle_chart(wave2_df,'Are you Hispanic or Latino? ','Community', 'counter_column', "Community Hispanic Chart")
 wave_2_gender_bar_chart = create_horizontal_bar_chart(wave2_df, 'Gender', 'Gender')
 
 
@@ -36,7 +37,7 @@ wave_2_demographic_figures = html.Div([
                           config={"displayModeBar": displayModeBar, "displaylogo": displayModeBar},),
                 ], className="row-container"),
             html.Div([
-                dcc.Graph(id="wave-2-community-pie-chart", className="figure", figure = wave_2_community_pie_chart,
+                dcc.Graph(id="wave-2-community-icicle-chart", className="figure", figure = wave_2_community_icicle_chart,
                           config={"displayModeBar": displayModeBar, "displaylogo": displayModeBar},),
                 dcc.Graph(id="wave-2-gender-bar-chart", className="figure", figure = wave_2_gender_bar_chart,
                           config={"displayModeBar": displayModeBar, "displaylogo": displayModeBar},),

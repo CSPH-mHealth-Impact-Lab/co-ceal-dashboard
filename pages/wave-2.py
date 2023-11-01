@@ -31,7 +31,7 @@ def update_wave_2_tab(selected_tab):
 @callback(
     [Output('wave-2-age-histogram', 'figure'),
      Output('wave-2-lang-pie-chart', 'figure'),
-     Output('wave-2-community-pie-chart', 'figure'),
+     Output('wave-2-community-icicle-chart', 'figure'),
      Output('wave-2-gender-bar-chart', 'figure'),],
     [Input('gender_filter', 'value'),
     Input('language_filter', 'value'),
@@ -45,7 +45,7 @@ def callback_func(gender_values,language_values,community_values,income_values):
     temp_df = temp_df[temp_df["Income"].isin(income_values)]
     wave_2_age_histogram = create_histogram(temp_df, 'Age', title_text="Age Distribution", num_bins=15)
     wave_2_lang_pie_chart = create_pie_chart(temp_df, 'Language', 'counter_column', 'Language')
-    wave_2_community_pie_chart = create_pie_chart(temp_df, 'Community', 'counter_column', 'Community')
+    wave_2_community_pie_chart = create_icicle_chart(temp_df,'Are you Hispanic or Latino? ','Community', 'counter_column', "Community Hispanic Chart")
     wave_2_gender_bar_chart = create_horizontal_bar_chart(temp_df, 'Gender', 'Gender')
     pathname = [gender_values,language_values,community_values,income_values]
     return [wave_2_age_histogram,wave_2_lang_pie_chart,wave_2_community_pie_chart,wave_2_gender_bar_chart ]

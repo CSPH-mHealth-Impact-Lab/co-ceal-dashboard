@@ -114,8 +114,6 @@ def create_pie_chart(data, category_column, count_column, title_text, graph_titl
 
 # Function to create a horizontal bar chart with updated layout
 
-import plotly.express as px
-
 def create_horizontal_bar_chart(data, column, title_text, graph_title_font_color=graph_title_font_color, graph_title_font_size=graph_title_font_size):
     data_cleaned = data.dropna(subset=[column])
 
@@ -167,3 +165,47 @@ def create_horizontal_bar_chart(data, column, title_text, graph_title_font_color
     return fig
 
 
+def create_donut_chart(data, category_column, count_column, title_text, graph_title_font_color=graph_title_font_color, graph_title_font_size=graph_title_font_size):
+    data_cleaned = data.dropna(subset=[category_column])
+
+    # Create a pie chart
+    fig = go.Figure(data=[go.Pie(
+        labels=data_cleaned[category_column],
+        values=data_cleaned[count_column],
+        hole=.7,
+        hovertemplate = "%{label} <br>Percentage: %{percent} <br> Count: %{value}",
+                                 insidetextorientation='radial'
+    )])
+
+    # Set the title and customize layout
+    fig.update_layout(
+        title_text=title_text,
+        title_font=dict(size=graph_title_font_size, color=graph_title_font_color),
+        title_x=0.5,  # Center align the title horizontally
+        title_y=0.95  # Adjust the vertical position of the title
+    )
+    fig.update_layout(
+        hoverlabel=dict(
+        bgcolor=hover_bgcolor,
+        font_size=hover_font_size,
+        font_family=hover_font_family,
+        font_color = hover_font_color
+    )
+)
+
+    return fig
+
+def create_icicle_chart(data, label_column,parent_column, count_column, title_text, graph_title_font_color=graph_title_font_color, graph_title_font_size=graph_title_font_size):
+    data_cleaned = data.dropna(subset=[label_column,parent_column])
+    fig = px.icicle(data_cleaned, path=[px.Constant("Total"), parent_column,label_column], values=count_column, 
+                hover_data=[count_column])
+    fig.update_traces(root_color="cyan")
+    fig.update_traces(texttemplate="%{label}<br>Count: %{value}")
+    fig.update_layout(margin = dict(t=50, l=25, r=25, b=25))
+    fig.update_layout(
+        title_text=title_text,
+        title_font=dict(size=graph_title_font_size, color=graph_title_font_color),
+        title_x=0.5,  # Center align the title horizontally
+        title_y=0.95  # Adjust the vertical position of the title
+    )
+    return fig
