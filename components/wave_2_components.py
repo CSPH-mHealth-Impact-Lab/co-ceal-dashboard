@@ -28,6 +28,8 @@ wave_2_lang_pie_chart = create_pie_chart(wave2_df, 'Language', 'counter_column',
 wave_2_community_icicle_chart = create_icicle_chart(wave2_df,'Are you Hispanic or Latino? ','Community', 'counter_column', "Community Hispanic Chart")
 wave_2_gender_bar_chart = create_horizontal_bar_chart(wave2_df, 'Gender', 'Gender')
 
+wave_2_testing_bar_chart = covid_testing_bar_chart(wave2_df, 'COVID Testing Behaviour')
+
 
 wave_2_demographic_figures = html.Div([
             html.Div([
@@ -46,9 +48,9 @@ wave_2_demographic_figures = html.Div([
 
 wave_2_tab2_figures = html.Div([
             html.Div([
-                dcc.Graph(id="figure-1", className="figure",
+                dcc.Graph(id="wave-2-testing-bar-chart", className="figure",
                           config={"displayModeBar": displayModeBar, "displaylogo": displayModeBar},
-                        figure=get_figure_layout("wave 2 tab 2 fig 1"),),
+                        figure=wave_2_testing_bar_chart,),
                 dcc.Graph(id="figure-2", className="figure",
                           config={"displayModeBar": displayModeBar, "displaylogo": displayModeBar},
                         figure=get_figure_layout("wave 2 tab 2 fig 2"),),

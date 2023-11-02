@@ -50,6 +50,21 @@ def callback_func(gender_values,language_values,community_values,income_values):
     pathname = [gender_values,language_values,community_values,income_values]
     return [wave_2_age_histogram,wave_2_lang_pie_chart,wave_2_community_pie_chart,wave_2_gender_bar_chart ]
 
+@callback(
+    [Output('wave-2-testing-bar-chart', 'figure'),],
+    [Input('gender_filter', 'value'),
+    Input('language_filter', 'value'),
+    Input('community_filter', 'value'),
+    Input('income_filter', 'value'),])
+def callback_func(gender_values,language_values,community_values,income_values):
+    
+    temp_df = wave2_df[wave2_df["Gender"].isin(gender_values)]
+    temp_df = temp_df[temp_df["Language"].isin(language_values)]
+    temp_df = temp_df[temp_df["Community"].isin(community_values)]
+    temp_df = temp_df[temp_df["Income"].isin(income_values)]
+    wave_2_testing_bar_chart = covid_testing_bar_chart(temp_df, 'COVID Testing Behaviour')
+    pathname = [gender_values,language_values,community_values,income_values]
+    return [wave_2_testing_bar_chart]
 
 @callback(
 [Output('gender_filter', 'value'),

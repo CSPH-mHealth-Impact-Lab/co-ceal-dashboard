@@ -195,13 +195,63 @@ def create_donut_chart(data, category_column, count_column, title_text, graph_ti
 
     return fig
 
+#'label'+'text'+'value'+'current path'+'percent root'+'percent entry'+'percent parent'
 def create_icicle_chart(data, label_column,parent_column, count_column, title_text, graph_title_font_color=graph_title_font_color, graph_title_font_size=graph_title_font_size):
     data_cleaned = data.dropna(subset=[label_column,parent_column])
-    fig = px.icicle(data_cleaned, path=[px.Constant("Total"), parent_column,label_column], values=count_column, 
+    fig = px.treemap(data_cleaned, path=[px.Constant("Total"), parent_column,label_column], values=count_column, 
                 hover_data=[count_column])
+    # fig = px.icicle(data_cleaned, path=[px.Constant("Total"), parent_column,label_column], values=count_column, 
+    #             hover_data=[count_column])
     fig.update_traces(root_color="cyan")
     fig.update_traces(texttemplate="%{label}<br>Count: %{value}")
+    fig.data[0].textinfo = 'label + text + value + current path + percent root + percent entry + percent parent'
+
     fig.update_layout(margin = dict(t=50, l=25, r=25, b=25))
+    fig.update_layout(
+        title_text=title_text,
+        title_font=dict(size=graph_title_font_size, color=graph_title_font_color),
+        title_x=0.5,  # Center align the title horizontally
+        title_y=0.95  # Adjust the vertical position of the title
+    )
+    return fig
+
+def covid_testing_bar_chart(data,title_text, graph_title_font_color=graph_title_font_color, graph_title_font_size=graph_title_font_size):
+    constant_value1 = 75.2
+    constant_value2 = 35.2
+    columns_list = ['ceal_testbehavior','ceal2_testpositive']
+    columns_list_new = ['% tested for COVID','% tested positive for COVID']
+    grouped_df = data.groupby('Community').agg(Count=('Community', 'count'), **{col: (col, lambda x: (x==1).sum()) for col in columns_list}).reset_index()
+    for col in columns_list:
+        grouped_df[col] = grouped_df[col] * 100 / grouped_df['Count']
+        grouped_df[col] = grouped_df[col].round(1)
+
+    rename_dict = dict(zip(columns_list, columns_list_new))
+    grouped_df.rename(columns=rename_dict, inplace=True)
+    fig = go.Figure(data=[
+    go.Bar(name='% tested for COVID', y=grouped_df['Community'], x=grouped_df['% tested for COVID'], orientation='h', marker_color='skyblue'),
+    go.Bar(name='% tested positive for COVID', y=grouped_df['Community'], x=grouped_df['% tested positive for COVID'], orientation='h', marker_color='lightsalmon')
+])
+
+    # Add vertical line for a constant value
+    fig.add_shape(
+        type="line", line=dict(dash="dash", width=4, color="skyblue"), y0=-0.5, y1=grouped_df.shape[0],
+        x0=constant_value1, x1=constant_value1
+    )
+    # Add label to the line
+    fig.add_annotation(
+        y=grouped_df.shape[0], x=constant_value1+5,text="population average",
+        showarrow=False,font=dict(size=10,color="black"),)
+
+    # Add another vertical line for another constant value
+    fig.add_shape(
+        type="line", line=dict(dash="dash", width=4, color="lightsalmon"), y0=0, y1=grouped_df.shape[0],
+        x0=constant_value2, x1=constant_value2)
+    fig.add_annotation(
+        y=grouped_df.shape[0], x=constant_value2+5,text="population average",
+        showarrow=False,font=dict(size=10,color="black"),)
+
+    # Change the bar mode
+    fig.update_layout(barmode='group')
     fig.update_layout(
         title_text=title_text,
         title_font=dict(size=graph_title_font_size, color=graph_title_font_color),
