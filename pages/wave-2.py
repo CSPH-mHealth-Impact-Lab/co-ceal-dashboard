@@ -51,7 +51,8 @@ def callback_func(gender_values,language_values,community_values,income_values):
     return [wave_2_age_histogram,wave_2_lang_pie_chart,wave_2_community_pie_chart,wave_2_gender_bar_chart ]
 
 @callback(
-    [Output('wave-2-testing-bar-chart', 'figure'),],
+    [Output('wave-2-testing-bar-chart', 'figure'),
+     Output('wave-2-flu-vaccine-bar-chart', 'figure'),],
     [Input('gender_filter', 'value'),
     Input('language_filter', 'value'),
     Input('community_filter', 'value'),
@@ -63,8 +64,9 @@ def callback_func(gender_values,language_values,community_values,income_values):
     temp_df = temp_df[temp_df["Community"].isin(community_values)]
     temp_df = temp_df[temp_df["Income"].isin(income_values)]
     wave_2_testing_bar_chart = covid_testing_bar_chart(temp_df, 'COVID Testing Behaviour')
+    wave_2_flu_vacaine_bar_chart = flu_vaccine_bar_chart(temp_df, 'Flu Vaccine Behaviour')
     pathname = [gender_values,language_values,community_values,income_values]
-    return [wave_2_testing_bar_chart]
+    return [wave_2_testing_bar_chart,wave_2_flu_vacaine_bar_chart]
 
 @callback(
 [Output('gender_filter', 'value'),
@@ -118,3 +120,30 @@ def update_filters_select_unselect_all(btn1,btn2,btn3,btn4,feature_options_gende
             income_select_all = [i['value'] for i in feature_options_income]
 
     return [gender_select_all,language_select_all,community_select_all,income_select_all]
+
+
+@callback(
+    [Output('trust-by-community-bar-chart', 'figure'),],
+    # Output('back-button', 'style'), #to hide/unhide the back button
+    [Input('trust-by-community-bar-chart', 'clickData'),]   #for getting the vendor name from graph
+    # Input('back-button', 'n_clicks')
+)
+
+def drilldown(click_data):
+    ctx = dash.callback_context
+    trigger_id = ctx.triggered[0]["prop_id"].split(".")[0]
+    print(trigger_id)
+    if trigger_id == 'trust-by-community-bar-chart':
+        
+        if click_data is not None:
+            click_data = click_data['points'][0]['label']
+            print(click_data)
+            if click_data not in wave2_df['Community'].unique():
+                fig = trust_by_community(wave2_df, "Average Trust by Community")
+                return [fig]
+            temp_df = wave2_df[wave2_df["Community"]==click_data]
+            fig = trust_by_category(temp_df,"Average Trust for "+click_data)
+            return [fig]
+    else:
+        fig = trust_by_community(wave2_df, "Average Trust by Community")
+    return [fig]

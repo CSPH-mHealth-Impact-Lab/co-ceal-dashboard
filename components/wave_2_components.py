@@ -29,6 +29,8 @@ wave_2_community_icicle_chart = create_icicle_chart(wave2_df,'Are you Hispanic o
 wave_2_gender_bar_chart = create_horizontal_bar_chart(wave2_df, 'Gender', 'Gender')
 
 wave_2_testing_bar_chart = covid_testing_bar_chart(wave2_df, 'COVID Testing Behaviour')
+wave_2_flu_vacaine_bar_chart = flu_vaccine_bar_chart(wave2_df, 'Flu Vaccine Behaviour')
+trust_by_community_bar_chart = trust_by_community(wave2_df, 'Trust by Community')
 
 
 wave_2_demographic_figures = html.Div([
@@ -51,14 +53,14 @@ wave_2_tab2_figures = html.Div([
                 dcc.Graph(id="wave-2-testing-bar-chart", className="figure",
                           config={"displayModeBar": displayModeBar, "displaylogo": displayModeBar},
                         figure=wave_2_testing_bar_chart,),
-                dcc.Graph(id="figure-2", className="figure",
+                dcc.Graph(id="trust-by-community-bar-chart", className="figure",
                           config={"displayModeBar": displayModeBar, "displaylogo": displayModeBar},
-                        figure=get_figure_layout("wave 2 tab 2 fig 2"),),
+                        figure=trust_by_community_bar_chart),
                 ], className="row-container"),
             html.Div([
-                dcc.Graph(id="figure-3", className="figure",
+                dcc.Graph(id="wave-2-flu-vaccine-bar-chart", className="figure",
                           config={"displayModeBar": displayModeBar, "displaylogo": displayModeBar},
-                        figure=get_figure_layout("wave 2 tab 2 fig 3"),),
+                        figure=wave_2_flu_vacaine_bar_chart),
                 dcc.Graph(id="figure-4", className="figure",
                           config={"displayModeBar": displayModeBar, "displaylogo": displayModeBar},
                         figure=get_figure_layout("wave 2 tab 2 fig 4"),),
@@ -67,10 +69,10 @@ wave_2_tab2_figures = html.Div([
 
 wave_2_tab3_figures = html.Div([
             html.Div([
-                dcc.Graph(id="figure-1", className="figure",
+                dcc.Graph(id="figure-3", className="figure",
                           config={"displayModeBar": displayModeBar, "displaylogo": displayModeBar},
                         figure=get_figure_layout("wave 2 tab 3 fig 1"),),
-                dcc.Graph(id="figure-2", className="figure",
+                dcc.Graph(id="figure-4", className="figure",
                           config={"displayModeBar": displayModeBar, "displaylogo": displayModeBar},
                         figure=get_figure_layout("wave 2 tab 3 fig 2"),),
                 ], className="row-container"),
@@ -96,7 +98,7 @@ wave_2_tabs = html.Div(
         dbc.Tabs([
             dbc.Tab(label="Demographics", id="wave-2-demographics-tab", className="nav-item",
                     active_tab_style={"textTransform": "uppercase"}, active_label_style={"color": "#FB79B3"}, active_tab_class_name="fw-bold fst-italic", activeLabelClassName="text-success"),
-            dbc.Tab(label="Tab 2", id="tab-2", className="nav-item",
+            dbc.Tab(label="Vaccine Behaviour", id="tab-2", className="nav-item",
                     active_tab_style={"textTransform": "uppercase"}, active_label_style={"color": "#FB79B3"}, active_tab_class_name="fw-bold fst-italic", activeLabelClassName="text-success"),
             dbc.Tab(label="Tab 3", id="tab-3", className="nav-item",
                     active_tab_style={"textTransform": "uppercase"}, active_label_style={"color": "#FB79B3"}, active_tab_class_name="fw-bold fst-italic", activeLabelClassName="text-success"),

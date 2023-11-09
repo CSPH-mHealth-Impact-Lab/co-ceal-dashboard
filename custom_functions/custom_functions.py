@@ -3,6 +3,7 @@ import plotly.graph_objects as go
 import os
 from dash import html, dcc
 import numpy as np
+import pandas as pd
 
 graph_title_font_color = os.environ.get("graph_title_font_color", "#333")
 graph_title_font_size = int(os.environ.get("graph_title_font_size", 18))
@@ -228,26 +229,26 @@ def covid_testing_bar_chart(data,title_text, graph_title_font_color=graph_title_
     rename_dict = dict(zip(columns_list, columns_list_new))
     grouped_df.rename(columns=rename_dict, inplace=True)
     fig = go.Figure(data=[
-    go.Bar(name='% tested for COVID', y=grouped_df['Community'], x=grouped_df['% tested for COVID'], orientation='h', marker_color='skyblue'),
-    go.Bar(name='% tested positive for COVID', y=grouped_df['Community'], x=grouped_df['% tested positive for COVID'], orientation='h', marker_color='lightsalmon')
+    go.Bar(name='% tested for COVID', y=grouped_df['Community'], x=grouped_df['% tested for COVID'], orientation='h', marker_color=px.colors.qualitative.Dark24[0]),
+    go.Bar(name='% tested positive for COVID', y=grouped_df['Community'], x=grouped_df['% tested positive for COVID'], orientation='h', marker_color=px.colors.qualitative.Dark24[1])
 ])
 
     # Add vertical line for a constant value
     fig.add_shape(
-        type="line", line=dict(dash="dash", width=4, color="skyblue"), y0=-0.5, y1=grouped_df.shape[0],
+        type="line", line=dict(dash="dash", width=4, color=px.colors.qualitative.Dark24[0]), y0=-0.5, y1=grouped_df.shape[0],
         x0=constant_value1, x1=constant_value1
     )
     # Add label to the line
     fig.add_annotation(
-        y=grouped_df.shape[0], x=constant_value1+5,text="population average",
+        y=grouped_df.shape[0], x=constant_value1+2,text="avg: 75.2",
         showarrow=False,font=dict(size=10,color="black"),)
 
     # Add another vertical line for another constant value
     fig.add_shape(
-        type="line", line=dict(dash="dash", width=4, color="lightsalmon"), y0=0, y1=grouped_df.shape[0],
+        type="line", line=dict(dash="dash", width=4, color=px.colors.qualitative.Dark24[1]), y0=0, y1=grouped_df.shape[0],
         x0=constant_value2, x1=constant_value2)
     fig.add_annotation(
-        y=grouped_df.shape[0], x=constant_value2+5,text="population average",
+        y=grouped_df.shape[0], x=constant_value2+2,text="avg: 35.2",
         showarrow=False,font=dict(size=10,color="black"),)
 
     # Change the bar mode
@@ -256,6 +257,109 @@ def covid_testing_bar_chart(data,title_text, graph_title_font_color=graph_title_
         title_text=title_text,
         title_font=dict(size=graph_title_font_size, color=graph_title_font_color),
         title_x=0.5,  # Center align the title horizontally
-        title_y=0.95  # Adjust the vertical position of the title
+        title_y=0.95,  # Adjust the vertical position of the title
+        yaxis=dict(tickfont=dict(size=11)),
+        xaxis=dict(title="percentage"),
+        legend=dict(orientation="h",yanchor="bottom",y=1,xanchor="right",x=1)  # Decrease font size for x axis labels
+    )
+    return fig
+
+def flu_vaccine_bar_chart(data,title_text, graph_title_font_color=graph_title_font_color, graph_title_font_size=graph_title_font_size):
+    temp_flu_df = data.groupby('Community').agg(Count=('Community', 'count'), **{'flu_vax_season21_22': ('flu_vax_season21_22', lambda x: (x==1).sum())}).reset_index()
+    col = 'flu_vax_season21_22'
+    temp_flu_df[col] = temp_flu_df[col] * 100 / temp_flu_df['Count']
+    temp_flu_df[col] = temp_flu_df[col].round(1)
+    temp_flu_df.rename(columns={'flu_vax_season21_22': '% vaccinated for flu'}, inplace=True)
+    temp_flu_df.drop(columns=['Count'], inplace=True)
+
+    temp_ch_df = data[(data["parent_ch1217"]==1) | (data["parent_ch511"]==1) | (data["parent_ch04"]==1)]
+    temp_ch_df = temp_ch_df.groupby('Community').agg(Count=('Community', 'count'), **{'flu_vax_season21_22_ch': ('flu_vax_season21_22_ch', lambda x: (x==1).sum())}).reset_index()
+    col = 'flu_vax_season21_22_ch'
+    temp_ch_df[col] = temp_ch_df[col] * 100 / temp_ch_df['Count']
+    temp_ch_df[col] = temp_ch_df[col].round(1)
+    temp_ch_df.rename(columns={'flu_vax_season21_22_ch': '% vaccinated children for flu'}, inplace=True)
+    temp_ch_df.drop(columns=['Count'], inplace=True)
+
+    flu_df = pd.merge(temp_ch_df, temp_flu_df, on='Community')
+    constant_value1 = flu_df['% vaccinated for flu'].mean()
+    constant_value2 = flu_df['% vaccinated children for flu'].mean()
+
+    fig = go.Figure(data=[
+    go.Bar(name='% vaccinated for flu', y=flu_df['Community'], x=flu_df['% vaccinated for flu'], orientation='h', marker_color=px.colors.qualitative.Dark24[0]),
+    go.Bar(name='% vaccinated children for flu', y=flu_df['Community'], x=flu_df['% vaccinated children for flu'], orientation='h', marker_color=px.colors.qualitative.Dark24[1])
+    ])
+    fig.add_shape(type="line", line=dict(dash="dash", width=4, color=px.colors.qualitative.Dark24[0]), y0=-0.5, 
+                  y1=flu_df.shape[0],x0=constant_value1, x1=constant_value1)
+    # Add label to the line
+    fig.add_annotation(y=flu_df.shape[0], x=constant_value1+2,text="avg: 58.8",
+        showarrow=False,font=dict(size=10,color=px.colors.qualitative.Dark24[0]),)
+
+    # Add another vertical line for another constant value
+    fig.add_shape(type="line", line=dict(dash="dash", width=4, color=px.colors.qualitative.Dark24[1]), 
+                  y0=0, y1=flu_df.shape[0],x0=constant_value2, x1=constant_value2)
+    fig.add_annotation(
+        y=flu_df.shape[0], x=constant_value2-2,text="avg: 58.3",
+        showarrow=False,font=dict(size=10,color=px.colors.qualitative.Dark24[1]),)
+
+    # Change the bar mode
+    fig.update_layout(barmode='group')
+    fig.update_layout(
+        title_text="Flu vaccine behaviour",
+        title_font=dict(size=graph_title_font_size, color=graph_title_font_color),
+        title_x=0.5,  # Center align the title horizontally
+        title_y=0.95,  # Adjust the vertical position of the title
+        yaxis=dict(tickfont=dict(size=11)),
+        xaxis=dict(title="percentage"),
+        legend=dict(orientation="h",yanchor="bottom",y=1,xanchor="right",x=1)  # Decrease font size for x axis labels
+    )
+
+    return fig
+
+def trust_by_community(data,title_text):
+    temp_df = data.copy()
+    trust_cols = [col for col in temp_df.columns if 'trust_ceal' in col and 'trial' not in col]
+    temp_df[trust_cols] = temp_df[trust_cols].replace(98, None)
+    temp_df[trust_cols] = temp_df[trust_cols].replace(990, None)
+    temp_df = temp_df.groupby('Community')[trust_cols].mean().reset_index()
+    temp_df['trust_avg'] = temp_df[trust_cols].mean(axis=1)
+    temp_df_melted = pd.melt(temp_df, id_vars=["Community"], var_name="variable", value_name="value")
+    graph_df = temp_df_melted[temp_df_melted['variable']=='trust_avg']
+    fig = go.Figure(data=[go.Bar(name='Trust by Community', y=graph_df['Community'], x=graph_df['value'], marker_color=px.colors.qualitative.Dark24[0],orientation='h'),])
+    fig.update_layout(
+        title_text=title_text,
+        title_font=dict(size=graph_title_font_size, color=graph_title_font_color),
+        title_x=0.5,  # Center align the title horizontally
+        title_y=0.95,  # Adjust the vertical position of the title
+        yaxis=dict(tickfont=dict(size=11)),
+        legend=dict(orientation="h",yanchor="bottom",y=1,xanchor="right",x=1),  # Decrease font size for x axis labels
+        xaxis=dict(
+        range=[0, 2],  # Set x axis range as 0-3
+        tickvals=[0, 1, 2],
+        ticktext=["Not at all", "A little", "A great deal"]
+    )
+    )
+    return fig
+
+def trust_by_category(data,title_text):
+    temp_df = data.copy()
+    trust_cols = [col for col in temp_df.columns if 'trust_ceal' in col and 'trial' not in col]
+    temp_df[trust_cols] = temp_df[trust_cols].replace(98, None)
+    temp_df[trust_cols] = temp_df[trust_cols].replace(990, None)
+    temp_df = temp_df.groupby('Community')[trust_cols].mean().reset_index()
+    temp_df['trust_avg'] = temp_df[trust_cols].mean(axis=1)
+    temp_df_melted = pd.melt(temp_df, id_vars=["Community"], var_name="variable", value_name="value")
+    fig = go.Figure(data=[go.Bar(name='Trust by Community', y=temp_df_melted['variable'], x=temp_df_melted['value'], marker_color=px.colors.qualitative.Dark24[0],orientation='h'),])
+    fig.update_layout(
+        title_text=title_text,
+        title_font=dict(size=graph_title_font_size, color=graph_title_font_color),
+        title_x=0.5,  # Center align the title horizontally
+        title_y=0.95,  # Adjust the vertical position of the title
+        yaxis=dict(tickfont=dict(size=11)),
+        legend=dict(orientation="h",yanchor="bottom",y=1,xanchor="right",x=1),  # Decrease font size for x axis labels
+        xaxis=dict(
+        range=[0, 2],  # Set x axis range as 0-3
+        tickvals=[0, 1, 2],
+        ticktext=["Not at all", "A little", "A great deal"]
+    )
     )
     return fig

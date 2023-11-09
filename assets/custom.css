@@ -22,6 +22,12 @@
   margin-bottom: 20px; /* Add some spacing between graphs */
 }
 
+.figure-single {
+  height: 80vh;
+  width: 100%; /* Each graph takes full width on small screens */
+  margin-bottom: 20px; /* Add some spacing between graphs */
+}
+
 .my-custom-title {
         font-size: 24px;  /* Customize font size as needed */
         color: #e17313;  /* Customize text color as needed */
