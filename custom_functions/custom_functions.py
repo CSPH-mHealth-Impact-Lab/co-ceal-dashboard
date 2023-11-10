@@ -229,13 +229,13 @@ def covid_testing_bar_chart(data,title_text, graph_title_font_color=graph_title_
     rename_dict = dict(zip(columns_list, columns_list_new))
     grouped_df.rename(columns=rename_dict, inplace=True)
     fig = go.Figure(data=[
-    go.Bar(name='% tested for COVID', y=grouped_df['Community'], x=grouped_df['% tested for COVID'], orientation='h', marker_color=px.colors.qualitative.Dark24[0]),
-    go.Bar(name='% tested positive for COVID', y=grouped_df['Community'], x=grouped_df['% tested positive for COVID'], orientation='h', marker_color=px.colors.qualitative.Dark24[1])
+    go.Bar(name='% tested for COVID', y=grouped_df['Community'], x=grouped_df['% tested for COVID'], orientation='h', marker_color=px.colors.qualitative.Antique[4]),
+    go.Bar(name='% tested positive for COVID', y=grouped_df['Community'], x=grouped_df['% tested positive for COVID'], orientation='h', marker_color=px.colors.qualitative.Light24[8])
 ])
 
     # Add vertical line for a constant value
     fig.add_shape(
-        type="line", line=dict(dash="dash", width=4, color=px.colors.qualitative.Dark24[0]), y0=-0.5, y1=grouped_df.shape[0],
+        type="line", line=dict(dash="dash", width=4, color=px.colors.qualitative.Antique[4]), y0=-0.5, y1=grouped_df.shape[0],
         x0=constant_value1, x1=constant_value1
     )
     # Add label to the line
@@ -245,7 +245,7 @@ def covid_testing_bar_chart(data,title_text, graph_title_font_color=graph_title_
 
     # Add another vertical line for another constant value
     fig.add_shape(
-        type="line", line=dict(dash="dash", width=4, color=px.colors.qualitative.Dark24[1]), y0=0, y1=grouped_df.shape[0],
+        type="line", line=dict(dash="dash", width=4, color=px.colors.qualitative.Light24[8]), y0=0, y1=grouped_df.shape[0],
         x0=constant_value2, x1=constant_value2)
     fig.add_annotation(
         y=grouped_df.shape[0], x=constant_value2+2,text="avg: 35.2",
@@ -285,21 +285,21 @@ def flu_vaccine_bar_chart(data,title_text, graph_title_font_color=graph_title_fo
     constant_value2 = flu_df['% vaccinated children for flu'].mean()
 
     fig = go.Figure(data=[
-    go.Bar(name='% vaccinated for flu', y=flu_df['Community'], x=flu_df['% vaccinated for flu'], orientation='h', marker_color=px.colors.qualitative.Dark24[0]),
-    go.Bar(name='% vaccinated children for flu', y=flu_df['Community'], x=flu_df['% vaccinated children for flu'], orientation='h', marker_color=px.colors.qualitative.Dark24[1])
+    go.Bar(name='% vaccinated for flu', y=flu_df['Community'], x=flu_df['% vaccinated for flu'], orientation='h', marker_color=px.colors.qualitative.Antique[4]),
+    go.Bar(name='% vaccinated children for flu', y=flu_df['Community'], x=flu_df['% vaccinated children for flu'], orientation='h', marker_color=px.colors.qualitative.Light24[8])
     ])
-    fig.add_shape(type="line", line=dict(dash="dash", width=4, color=px.colors.qualitative.Dark24[0]), y0=-0.5, 
+    fig.add_shape(type="line", line=dict(dash="dash", width=4, color=px.colors.qualitative.Antique[4]), y0=-0.5, 
                   y1=flu_df.shape[0],x0=constant_value1, x1=constant_value1)
     # Add label to the line
     fig.add_annotation(y=flu_df.shape[0], x=constant_value1+2,text="avg: 58.8",
-        showarrow=False,font=dict(size=10,color=px.colors.qualitative.Dark24[0]),)
+        showarrow=False,font=dict(size=10,color=px.colors.qualitative.Antique[4]),)
 
     # Add another vertical line for another constant value
-    fig.add_shape(type="line", line=dict(dash="dash", width=4, color=px.colors.qualitative.Dark24[1]), 
+    fig.add_shape(type="line", line=dict(dash="dash", width=4, color=px.colors.qualitative.Light24[8]), 
                   y0=0, y1=flu_df.shape[0],x0=constant_value2, x1=constant_value2)
     fig.add_annotation(
         y=flu_df.shape[0], x=constant_value2-2,text="avg: 58.3",
-        showarrow=False,font=dict(size=10,color=px.colors.qualitative.Dark24[1]),)
+        showarrow=False,font=dict(size=10,color=px.colors.qualitative.Light24[8]),)
 
     # Change the bar mode
     fig.update_layout(barmode='group')
@@ -324,7 +324,7 @@ def trust_by_community(data,title_text):
     temp_df['trust_avg'] = temp_df[trust_cols].mean(axis=1)
     temp_df_melted = pd.melt(temp_df, id_vars=["Community"], var_name="variable", value_name="value")
     graph_df = temp_df_melted[temp_df_melted['variable']=='trust_avg']
-    fig = go.Figure(data=[go.Bar(name='Trust by Community', y=graph_df['Community'], x=graph_df['value'], marker_color=px.colors.qualitative.Dark24[0],orientation='h'),])
+    fig = go.Figure(data=[go.Bar(name='Trust by Community', y=graph_df['Community'], x=graph_df['value'], marker_color=px.colors.qualitative.Antique[4],orientation='h'),])
     fig.update_layout(
         title_text=title_text,
         title_font=dict(size=graph_title_font_size, color=graph_title_font_color),
@@ -348,18 +348,70 @@ def trust_by_category(data,title_text):
     temp_df = temp_df.groupby('Community')[trust_cols].mean().reset_index()
     temp_df['trust_avg'] = temp_df[trust_cols].mean(axis=1)
     temp_df_melted = pd.melt(temp_df, id_vars=["Community"], var_name="variable", value_name="value")
-    fig = go.Figure(data=[go.Bar(name='Trust by Community', y=temp_df_melted['variable'], x=temp_df_melted['value'], marker_color=px.colors.qualitative.Dark24[0],orientation='h'),])
+    fig = go.Figure(data=[go.Bar(name='Trust by Community', y=temp_df_melted['variable'], x=temp_df_melted['value'], marker_color=px.colors.qualitative.Antique[4],orientation='h'),])
     fig.update_layout(
         title_text=title_text,
         title_font=dict(size=graph_title_font_size, color=graph_title_font_color),
         title_x=0.5,  # Center align the title horizontally
         title_y=0.95,  # Adjust the vertical position of the title
-        yaxis=dict(tickfont=dict(size=11)),
+        yaxis=dict(tickfont=dict(size=11),
+                   tickvals=['trust_avg','trust_ceal2_commorg','trust_ceal2_tribal','trust_ceal_socialmed_r2','trust_ceal_faith_r2',
+                    'trust_ceal_dr_r2','trust_ceal2_cdc','trust_ceal2_stgov','trust_ceal2_fedgov','trust_ceal_news','trust_ceal_coworkers','trust_ceal_friendsfam'],
+                    ticktext=['Average Trust','Community Organization','Tribal leadership','Social Media','Faith Leader',
+                    'Doctor or health care provider','CDC','State and/or local government','The federal government','News','People you go to work or class with','Your close friends and family']),
         legend=dict(orientation="h",yanchor="bottom",y=1,xanchor="right",x=1),  # Decrease font size for x axis labels
         xaxis=dict(
         range=[0, 2],  # Set x axis range as 0-3
         tickvals=[0, 1, 2],
         ticktext=["Not at all", "A little", "A great deal"]
     )
+    )
+    return fig
+
+def covid_vaccine_bar_chart(data,title_text, graph_title_font_color=graph_title_font_color, graph_title_font_size=graph_title_font_size):
+    constant_value1 = 81.8
+    constant_value2 = 47.3
+    columns_list = ['ceal2_covid_vaxdose','covid_boost']
+    columns_list_new = ['Atleast one dose','Received booster dose']
+    grouped_df = data.groupby('Community').agg(Count=('Community', 'count'), **{col: (col, lambda x: ((x==1) | (x==2) | (x==3)).sum()) for col in columns_list}).reset_index()
+    for col in columns_list:
+        grouped_df[col] = grouped_df[col] * 100 / grouped_df['Count']
+        grouped_df[col] = grouped_df[col].round(1)
+
+    rename_dict = dict(zip(columns_list, columns_list_new))
+    grouped_df.rename(columns=rename_dict, inplace=True)
+    fig = go.Figure(data=[
+    go.Bar(name='Atleast one dose', y=grouped_df['Community'], x=grouped_df['Atleast one dose'], orientation='h', marker_color=px.colors.qualitative.Antique[4]),
+    go.Bar(name='Received booster dose', y=grouped_df['Community'], x=grouped_df['Received booster dose'], orientation='h', marker_color=px.colors.qualitative.Light24[8])
+])
+
+    # Add vertical line for a constant value
+    fig.add_shape(
+        type="line", line=dict(dash="dash", width=4, color=px.colors.qualitative.Antique[4]), y0=-0.5, y1=grouped_df.shape[0],
+        x0=constant_value1, x1=constant_value1
+    )
+    # Add label to the line
+    fig.add_annotation(
+        y=grouped_df.shape[0], x=constant_value1+2,text="avg: 81.8",
+        showarrow=False,font=dict(size=10,color="black"),)
+
+    # Add another vertical line for another constant value
+    fig.add_shape(
+        type="line", line=dict(dash="dash", width=4, color=px.colors.qualitative.Light24[8]), y0=0, y1=grouped_df.shape[0],
+        x0=constant_value2, x1=constant_value2)
+    fig.add_annotation(
+        y=grouped_df.shape[0], x=constant_value2+2,text="avg: 47.3",
+        showarrow=False,font=dict(size=10,color="black"),)
+
+    # Change the bar mode
+    fig.update_layout(barmode='group')
+    fig.update_layout(
+        title_text=title_text,
+        title_font=dict(size=graph_title_font_size, color=graph_title_font_color),
+        title_x=0.5,  # Center align the title horizontally
+        title_y=0.95,  # Adjust the vertical position of the title
+        yaxis=dict(tickfont=dict(size=11)),
+        xaxis=dict(title="percentage"),
+        legend=dict(orientation="h",yanchor="bottom",y=1,xanchor="right",x=1)  # Decrease font size for x axis labels
     )
     return fig

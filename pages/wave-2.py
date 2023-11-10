@@ -52,7 +52,8 @@ def callback_func(gender_values,language_values,community_values,income_values):
 
 @callback(
     [Output('wave-2-testing-bar-chart', 'figure'),
-     Output('wave-2-flu-vaccine-bar-chart', 'figure'),],
+     Output('wave-2-flu-vaccine-bar-chart', 'figure'),
+     Output('trust-by-community-bar-chart', 'figure'),],
     [Input('gender_filter', 'value'),
     Input('language_filter', 'value'),
     Input('community_filter', 'value'),
@@ -65,8 +66,9 @@ def callback_func(gender_values,language_values,community_values,income_values):
     temp_df = temp_df[temp_df["Income"].isin(income_values)]
     wave_2_testing_bar_chart = covid_testing_bar_chart(temp_df, 'COVID Testing Behaviour')
     wave_2_flu_vacaine_bar_chart = flu_vaccine_bar_chart(temp_df, 'Flu Vaccine Behaviour')
+    trust_by_community_bar_chart = trust_by_community(temp_df, "Average Trust by Community")
     pathname = [gender_values,language_values,community_values,income_values]
-    return [wave_2_testing_bar_chart,wave_2_flu_vacaine_bar_chart]
+    return [wave_2_testing_bar_chart,wave_2_flu_vacaine_bar_chart,trust_by_community_bar_chart]
 
 @callback(
 [Output('gender_filter', 'value'),
@@ -123,10 +125,10 @@ def update_filters_select_unselect_all(btn1,btn2,btn3,btn4,feature_options_gende
 
 
 @callback(
-    [Output('trust-by-community-bar-chart', 'figure'),],
-    # Output('back-button', 'style'), #to hide/unhide the back button
-    [Input('trust-by-community-bar-chart', 'clickData'),]   #for getting the vendor name from graph
-    # Input('back-button', 'n_clicks')
+    [Output('trust-by-community-bar-chart', 'figure',allow_duplicate=True),],
+
+    [Input('trust-by-community-bar-chart', 'clickData'),],
+    prevent_initial_call=True
 )
 
 def drilldown(click_data):
