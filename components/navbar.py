@@ -3,7 +3,7 @@ from dash import html, dcc
 
 nav_items = [
     # dbc.NavItem(dbc.NavLink("Wave 1", href="/")),
-    dbc.NavItem(dbc.NavLink("Wave 2", href="/wave-2")),
+    dbc.NavItem(dbc.NavLink("Wave 2", href="/")),
     # dbc.NavItem(dbc.NavLink("Wave 3", href="/wave-3")),
     # dbc.DropdownMenu(
     #     label="Cross Wave Analysis",  # Dropdown label

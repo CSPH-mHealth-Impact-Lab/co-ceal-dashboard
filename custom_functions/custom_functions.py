@@ -198,6 +198,7 @@ def create_donut_chart(data, category_column, count_column, title_text, graph_ti
 
 #'label'+'text'+'value'+'current path'+'percent root'+'percent entry'+'percent parent'
 def create_icicle_chart(data, label_column,parent_column, count_column, title_text, graph_title_font_color=graph_title_font_color, graph_title_font_size=graph_title_font_size):
+    print(title_text)
     data_cleaned = data.dropna(subset=[label_column,parent_column])
     fig = px.treemap(data_cleaned, path=[px.Constant("Total"), parent_column,label_column], values=count_column, 
                 hover_data=[count_column])
