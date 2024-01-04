@@ -26,7 +26,7 @@ app = dash.Dash(__name__, external_stylesheets=[dbc.themes.LUX], use_pages=True,
                 )
 
 
-app.layout = html.Div([dcc.Location(id='url', refresh=False),
+app.layout = html.Div([dcc.Location(id='url', refresh=False,pathname="/wave-2"),
     html.Link(
         rel='stylesheet',
         href='/assets/custom.css'  # Path to your custom CSS file

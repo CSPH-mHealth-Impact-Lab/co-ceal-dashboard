@@ -25,7 +25,7 @@ wave_2_title = html.Div([
 
 wave_2_age_histogram = create_histogram(wave2_df, 'Age', title_text="Age Distribution", num_bins=15)
 wave_2_lang_pie_chart = create_pie_chart(wave2_df, 'Language', 'counter_column', 'Survey Language Distribution')
-wave_2_community_icicle_chart = create_icicle_chart(wave2_df,'Are you Hispanic or Latino? ','Community', 'counter_column', "Community Hispanic Chart")
+wave_2_community_icicle_chart = create_icicle_chart(wave2_df,'Are you Hispanic or Latino? ','Community', 'counter_column', "Community Ethnicity Chart")
 wave_2_gender_bar_chart = create_horizontal_bar_chart(wave2_df, 'Gender', 'Gender')
 
 wave_2_testing_bar_chart = covid_testing_bar_chart(wave2_df, 'COVID Testing Behaviour')
