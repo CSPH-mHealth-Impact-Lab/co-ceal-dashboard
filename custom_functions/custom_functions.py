@@ -234,23 +234,42 @@ def covid_testing_bar_chart(data,title_text, graph_title_font_color=graph_title_
             marker_color=px.colors.qualitative.Light24[8], hovertemplate='%{x}<extra></extra>')
 ])
 
+    n = grouped_df['Community'].nunique()
+    fig.add_trace(go.Scatter(
+        x=[constant_value1]*n,
+        y=[grouped_df['Community'][i] for i in range(n)],  # Span the entire y-axis
+        mode='lines',
+        line=dict(width=0.5, color='rgba(0,0,0,0)'),  # Thin and transparent line
+        hoverinfo='text',
+        hovertext=['avg: '+str(round(constant_value1,1))]*n,
+        hoverlabel=dict(font_color='white',bgcolor=px.colors.qualitative.Antique[4]),
+        showlegend=False
+    ))
+    fig.add_trace(go.Scatter(
+        x=[constant_value2]*n,
+        y=[grouped_df['Community'][i] for i in range(n)],  # Span the entire y-axis
+        mode='lines',
+        line=dict(width=0.5, color='rgba(0,0,0,0)'),  # Thin and transparent line
+        hoverinfo='text',
+        hovertext=['avg: '+str(round(constant_value2,1))]*n,
+        hoverlabel=dict(font_color='white',bgcolor=px.colors.qualitative.Light24[8]),
+        showlegend=False
+    ))
+
     # Add vertical line for a constant value
+    max_y_coordinate = len(grouped_df['Community'].unique()) - 0.5  # Adjust based on your bar placement
+
+    # Add vertical lines for constant values
     fig.add_shape(
-        type="line", line=dict(dash="dash", width=4, color=px.colors.qualitative.Antique[4]), y0=-0.5, y1=grouped_df.shape[0],
+        type="line", line=dict(dash="dash", width=4, color=px.colors.qualitative.Antique[4]), 
+        y0=0, y1=max_y_coordinate,
         x0=constant_value1, x1=constant_value1
     )
-    # Add label to the line
-    fig.add_annotation(
-        y=grouped_df.shape[0], x=constant_value1+2,text="avg: 75.2",
-        showarrow=False,font=dict(size=10,color="black"),)
-
-    # Add another vertical line for another constant value
     fig.add_shape(
-        type="line", line=dict(dash="dash", width=4, color=px.colors.qualitative.Light24[8]), y0=0, y1=grouped_df.shape[0],
-        x0=constant_value2, x1=constant_value2)
-    fig.add_annotation(
-        y=grouped_df.shape[0], x=constant_value2+2,text="avg: 35.2",
-        showarrow=False,font=dict(size=10,color="black"),)
+        type="line", line=dict(dash="dash", width=4, color=px.colors.qualitative.Light24[8]), 
+        y0=0, y1=max_y_coordinate,
+        x0=constant_value2, x1=constant_value2
+)
 
     # Change the bar mode
     fig.update_layout(barmode='group')
@@ -291,18 +310,40 @@ def flu_vaccine_bar_chart(data,title_text, graph_title_font_color=graph_title_fo
     go.Bar(name='% vaccinated children for flu', y=flu_df['Community'], x=flu_df['% vaccinated children for flu'], orientation='h', 
            marker_color=px.colors.qualitative.Light24[8], hovertemplate='%{x}<extra></extra>')
     ])
-    fig.add_shape(type="line", line=dict(dash="dash", width=4, color=px.colors.qualitative.Antique[4]), y0=-0.5, 
-                  y1=flu_df.shape[0],x0=constant_value1, x1=constant_value1)
-    # Add label to the line
-    fig.add_annotation(y=flu_df.shape[0], x=constant_value1+2,text="avg: 58.8",
-        showarrow=False,font=dict(size=10,color=px.colors.qualitative.Antique[4]),)
+    n = temp_ch_df['Community'].nunique()
+    fig.add_trace(go.Scatter(
+        x=[constant_value1]*n,
+        y=[temp_ch_df['Community'][i] for i in range(n)],  # Span the entire y-axis
+        mode='lines',
+        line=dict(width=0.5, color='rgba(0,0,0,0)'),  # Thin and transparent line
+        hoverinfo='text',
+        hovertext=['avg: '+str(round(constant_value1,1))]*n,
+        hoverlabel=dict(font_color='white',bgcolor=px.colors.qualitative.Antique[4]),
+        showlegend=False
+    ))
+    fig.add_trace(go.Scatter(
+        x=[constant_value2]*n,
+        y=[temp_ch_df['Community'][i] for i in range(n)],  # Span the entire y-axis
+        mode='lines',
+        line=dict(width=0.5, color='rgba(0,0,0,0)'),  # Thin and transparent line
+        hoverinfo='text',
+        hovertext=['avg: '+str(round(constant_value2,1))]*n,
+        hoverlabel=dict(font_color='white',bgcolor=px.colors.qualitative.Light24[8]),
+        showlegend=False
+    ))
+    max_y_coordinate = len(temp_ch_df['Community'].unique()) - 0.5  # Adjust based on your bar placement
 
-    # Add another vertical line for another constant value
-    fig.add_shape(type="line", line=dict(dash="dash", width=4, color=px.colors.qualitative.Light24[8]), 
-                  y0=0, y1=flu_df.shape[0],x0=constant_value2, x1=constant_value2)
-    fig.add_annotation(
-        y=flu_df.shape[0], x=constant_value2-2,text="avg: 58.3",
-        showarrow=False,font=dict(size=10,color=px.colors.qualitative.Light24[8]),)
+    # Add vertical lines for constant values
+    fig.add_shape(
+        type="line", line=dict(dash="dash", width=4, color=px.colors.qualitative.Antique[4]), 
+        y0=0, y1=max_y_coordinate,
+        x0=constant_value1, x1=constant_value1
+    )
+    fig.add_shape(
+        type="line", line=dict(dash="dash", width=4, color=px.colors.qualitative.Light24[8]), 
+        y0=0, y1=max_y_coordinate,
+        x0=constant_value2, x1=constant_value2
+    )
 
     # Change the bar mode
     fig.update_layout(barmode='group')
@@ -390,24 +431,42 @@ def covid_vaccine_bar_chart(data,title_text, graph_title_font_color=graph_title_
     go.Bar(name='Received booster dose', y=grouped_df['Community'], x=grouped_df['Received booster dose'], orientation='h',
             marker_color=px.colors.qualitative.Light24[8], hovertemplate='%{x}<extra></extra>')
 ])
+    n = grouped_df['Community'].nunique()
+    fig.add_trace(go.Scatter(
+        x=[constant_value1]*n,
+        y=[grouped_df['Community'][i] for i in range(n)],  # Span the entire y-axis
+        mode='lines',
+        line=dict(width=0.5, color='rgba(0,0,0,0)'),  # Thin and transparent line
+        hoverinfo='text',
+        hovertext=['avg: '+str(round(constant_value1,1))]*n,
+        hoverlabel=dict(font_color='white',bgcolor=px.colors.qualitative.Antique[4]),
+        showlegend=False
+    ))
+    fig.add_trace(go.Scatter(
+        x=[constant_value2]*n,
+        y=[grouped_df['Community'][i] for i in range(n)],  # Span the entire y-axis
+        mode='lines',
+        line=dict(width=0.5, color='rgba(0,0,0,0)'),  # Thin and transparent line
+        hoverinfo='text',
+        hovertext=['avg: '+str(round(constant_value2,1))]*n,
+        hoverlabel=dict(font_color='white',bgcolor=px.colors.qualitative.Light24[8]),
+        showlegend=False
+    ))
 
     # Add vertical line for a constant value
+    max_y_coordinate = len(grouped_df['Community'].unique()) - 0.5  # Adjust based on your bar placement
+
+    # Add vertical lines for constant values
     fig.add_shape(
-        type="line", line=dict(dash="dash", width=4, color=px.colors.qualitative.Antique[4]), y0=-0.5, y1=grouped_df.shape[0],
+        type="line", line=dict(dash="dash", width=4, color=px.colors.qualitative.Antique[4]), 
+        y0=0, y1=max_y_coordinate,
         x0=constant_value1, x1=constant_value1
     )
-    # Add label to the line
-    fig.add_annotation(
-        y=grouped_df.shape[0], x=constant_value1+2,text="avg: 81.8",
-        showarrow=False,font=dict(size=10,color="black"),)
-
-    # Add another vertical line for another constant value
     fig.add_shape(
-        type="line", line=dict(dash="dash", width=4, color=px.colors.qualitative.Light24[8]), y0=0, y1=grouped_df.shape[0],
-        x0=constant_value2, x1=constant_value2)
-    fig.add_annotation(
-        y=grouped_df.shape[0], x=constant_value2+2,text="avg: 47.3",
-        showarrow=False,font=dict(size=10,color="black"),)
+        type="line", line=dict(dash="dash", width=4, color=px.colors.qualitative.Light24[8]), 
+        y0=0, y1=max_y_coordinate,
+        x0=constant_value2, x1=constant_value2
+)
 
     # Change the bar mode
     fig.update_layout(barmode='group')

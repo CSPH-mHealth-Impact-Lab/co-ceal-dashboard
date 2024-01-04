@@ -1,5 +1,5 @@
 import dash
-from dash import html, dcc, callback, Input, Output, State, callback_context
+from dash import html, dcc, callback, Input, Output, State, callback_context,no_update
 
 from components.wave_1_components import *
 from components.wave_2_components import *
@@ -97,45 +97,72 @@ def callback_func(gender_values,language_values,community_values,income_values):
  State('community_filter', 'options'),
  State('income_filter', 'options'),])
 
-def update_filters_select_unselect_all(btn1,btn2,btn3,btn4,feature_options_gender,feature_options_language,feature_options_community,feature_options_income):
+# def update_filters_select_unselect_all(btn1,btn2,btn3,btn4,feature_options_gender,feature_options_language,feature_options_community,feature_options_income):
+#     ctx = callback_context
+#     input_id = ctx.triggered[0]["prop_id"].split(".")[0]
+#     print(input_id)
+#     gender_select_all = [i['value'] for i in feature_options_gender]
+#     language_select_all = [i['value'] for i in feature_options_language]
+#     community_select_all = [i['value'] for i in feature_options_community]
+#     income_select_all = [i['value'] for i in feature_options_income]
+#     if input_id == 'select_all_genders':
+
+#         if btn1 % 2 != 0: ## Clear all options on even clicks
+#             gender_select_all = []
+#             #return []
+#         else: ## Select all options on odd clicks
+#             gender_select_all = [i['value'] for i in feature_options_gender]
+#     elif input_id == 'select_all_languages':
+
+#         if btn2 % 2 != 0: ## Clear all options on even clicks
+#             language_select_all = []
+#             #return []
+#         else: ## Select all options on odd clicks
+#             language_select_all = [i['value'] for i in feature_options_language]
+#     elif input_id == 'select_all_community':
+
+#         if btn3 % 2 != 0: ## Clear all options on even clicks
+#             community_select_all = []
+#             #return []
+#         else: ## Select all options on odd clicks
+#             community_select_all = [i['value'] for i in feature_options_community]
+#     elif input_id == 'select_all_income':
+
+#         if btn4 % 2 != 0: ## Clear all options on even clicks
+#             income_select_all = []
+#             #return []
+#         else: ## Select all options on odd clicks
+#             income_select_all = [i['value'] for i in feature_options_income]
+
+#     return [gender_select_all,language_select_all,community_select_all,income_select_all]
+
+
+
+def update_filters_select_unselect_all(btn1, btn2, btn3, btn4, feature_options_gender, feature_options_language, feature_options_community, feature_options_income):
     ctx = callback_context
     input_id = ctx.triggered[0]["prop_id"].split(".")[0]
-    print(input_id)
-    gender_select_all = [i['value'] for i in feature_options_gender]
-    language_select_all = [i['value'] for i in feature_options_language]
-    community_select_all = [i['value'] for i in feature_options_community]
-    income_select_all = [i['value'] for i in feature_options_income]
+
+    # Initialize return values to no_update
+    gender_select_all = no_update
+    language_select_all = no_update
+    community_select_all = no_update
+    income_select_all = no_update
+
+    # Define a function to toggle select/unselect
+    def toggle_selection(button_click, options):
+        return [] if button_click % 2 != 0 else [i['value'] for i in options]
+
+    # Update only the filter that triggered the callback
     if input_id == 'select_all_genders':
-
-        if btn1 % 2 != 0: ## Clear all options on even clicks
-            gender_select_all = []
-            #return []
-        else: ## Select all options on odd clicks
-            gender_select_all = [i['value'] for i in feature_options_gender]
+        gender_select_all = toggle_selection(btn1, feature_options_gender)
     elif input_id == 'select_all_languages':
-
-        if btn2 % 2 != 0: ## Clear all options on even clicks
-            language_select_all = []
-            #return []
-        else: ## Select all options on odd clicks
-            language_select_all = [i['value'] for i in feature_options_language]
+        language_select_all = toggle_selection(btn2, feature_options_language)
     elif input_id == 'select_all_community':
-
-        if btn3 % 2 != 0: ## Clear all options on even clicks
-            community_select_all = []
-            #return []
-        else: ## Select all options on odd clicks
-            community_select_all = [i['value'] for i in feature_options_community]
+        community_select_all = toggle_selection(btn3, feature_options_community)
     elif input_id == 'select_all_income':
+        income_select_all = toggle_selection(btn4, feature_options_income)
 
-        if btn4 % 2 != 0: ## Clear all options on even clicks
-            income_select_all = []
-            #return []
-        else: ## Select all options on odd clicks
-            income_select_all = [i['value'] for i in feature_options_income]
-
-    return [gender_select_all,language_select_all,community_select_all,income_select_all]
-
+    return [gender_select_all, language_select_all, community_select_all, income_select_all]
 
 @callback(
     [Output('trust-by-community-bar-chart', 'figure',allow_duplicate=True),],
