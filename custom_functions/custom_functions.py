@@ -197,18 +197,16 @@ def create_donut_chart(data, category_column, count_column, title_text, graph_ti
     return fig
 
 #'label'+'text'+'value'+'current path'+'percent root'+'percent entry'+'percent parent'
-def create_icicle_chart(data, label_column,parent_column, count_column, title_text, graph_title_font_color=graph_title_font_color, graph_title_font_size=graph_title_font_size):
-    print(title_text)
-    data_cleaned = data.dropna(subset=[label_column,parent_column])
-    fig = px.treemap(data_cleaned, path=[px.Constant("Total"), parent_column,label_column], values=count_column, 
-                hover_data=[count_column])
-    # fig = px.icicle(data_cleaned, path=[px.Constant("Total"), parent_column,label_column], values=count_column, 
-    #             hover_data=[count_column])
-    fig.update_traces(root_color="cyan")
-    fig.update_traces(texttemplate="%{label}<br>Count: %{value}")
-    fig.data[0].textinfo = 'label + text + value + current path + percent root + percent entry + percent parent'
+def create_icicle_chart(data, label_column, parent_column, count_column, title_text, graph_title_font_color='black', graph_title_font_size=12):
+    data_cleaned = data.dropna(subset=[label_column, parent_column])
+    fig = px.treemap(data_cleaned, path=[px.Constant("Total"), parent_column, label_column], values=count_column)
 
-    fig.update_layout(margin = dict(t=50, l=25, r=25, b=25))
+    # Update traces to remove hover data
+    fig.update_traces(root_color="cyan", hovertemplate=None)
+    fig.update_traces(texttemplate="%{label}<br>Count: %{value}")
+
+    # Update layout
+    fig.update_layout(margin=dict(t=50, l=25, r=25, b=25))
     fig.update_layout(
         title_text=title_text,
         title_font=dict(size=graph_title_font_size, color=graph_title_font_color),
@@ -230,8 +228,10 @@ def covid_testing_bar_chart(data,title_text, graph_title_font_color=graph_title_
     rename_dict = dict(zip(columns_list, columns_list_new))
     grouped_df.rename(columns=rename_dict, inplace=True)
     fig = go.Figure(data=[
-    go.Bar(name='% tested for COVID', y=grouped_df['Community'], x=grouped_df['% tested for COVID'], orientation='h', marker_color=px.colors.qualitative.Antique[4]),
-    go.Bar(name='% tested positive for COVID', y=grouped_df['Community'], x=grouped_df['% tested positive for COVID'], orientation='h', marker_color=px.colors.qualitative.Light24[8])
+    go.Bar(name='% tested for COVID', y=grouped_df['Community'], x=grouped_df['% tested for COVID'], orientation='h', 
+           marker_color=px.colors.qualitative.Antique[4], hovertemplate='%{x}<extra></extra>'),
+    go.Bar(name='% tested positive for COVID', y=grouped_df['Community'], x=grouped_df['% tested positive for COVID'], orientation='h',
+            marker_color=px.colors.qualitative.Light24[8], hovertemplate='%{x}<extra></extra>')
 ])
 
     # Add vertical line for a constant value
@@ -286,8 +286,10 @@ def flu_vaccine_bar_chart(data,title_text, graph_title_font_color=graph_title_fo
     constant_value2 = flu_df['% vaccinated children for flu'].mean()
 
     fig = go.Figure(data=[
-    go.Bar(name='% vaccinated for flu', y=flu_df['Community'], x=flu_df['% vaccinated for flu'], orientation='h', marker_color=px.colors.qualitative.Antique[4]),
-    go.Bar(name='% vaccinated children for flu', y=flu_df['Community'], x=flu_df['% vaccinated children for flu'], orientation='h', marker_color=px.colors.qualitative.Light24[8])
+    go.Bar(name='% vaccinated for flu', y=flu_df['Community'], x=flu_df['% vaccinated for flu'], orientation='h', 
+           marker_color=px.colors.qualitative.Antique[4], hovertemplate='%{x}<extra></extra>'),
+    go.Bar(name='% vaccinated children for flu', y=flu_df['Community'], x=flu_df['% vaccinated children for flu'], orientation='h', 
+           marker_color=px.colors.qualitative.Light24[8], hovertemplate='%{x}<extra></extra>')
     ])
     fig.add_shape(type="line", line=dict(dash="dash", width=4, color=px.colors.qualitative.Antique[4]), y0=-0.5, 
                   y1=flu_df.shape[0],x0=constant_value1, x1=constant_value1)
@@ -325,7 +327,8 @@ def trust_by_community(data,title_text):
     temp_df['trust_avg'] = temp_df[trust_cols].mean(axis=1)
     temp_df_melted = pd.melt(temp_df, id_vars=["Community"], var_name="variable", value_name="value")
     graph_df = temp_df_melted[temp_df_melted['variable']=='trust_avg']
-    fig = go.Figure(data=[go.Bar(name='Trust by Community', y=graph_df['Community'], x=graph_df['value'], marker_color=px.colors.qualitative.Antique[4],orientation='h'),])
+    fig = go.Figure(data=[go.Bar(name='Trust by Community', y=graph_df['Community'], x=graph_df['value'],
+                                  marker_color=px.colors.qualitative.Antique[4],orientation='h', hovertemplate='%{x}<extra></extra>'),])
     fig.update_layout(
         title_text=title_text,
         title_font=dict(size=graph_title_font_size, color=graph_title_font_color),
@@ -382,8 +385,10 @@ def covid_vaccine_bar_chart(data,title_text, graph_title_font_color=graph_title_
     rename_dict = dict(zip(columns_list, columns_list_new))
     grouped_df.rename(columns=rename_dict, inplace=True)
     fig = go.Figure(data=[
-    go.Bar(name='Atleast one dose', y=grouped_df['Community'], x=grouped_df['Atleast one dose'], orientation='h', marker_color=px.colors.qualitative.Antique[4]),
-    go.Bar(name='Received booster dose', y=grouped_df['Community'], x=grouped_df['Received booster dose'], orientation='h', marker_color=px.colors.qualitative.Light24[8])
+    go.Bar(name='Atleast one dose', y=grouped_df['Community'], x=grouped_df['Atleast one dose'], orientation='h', 
+           marker_color=px.colors.qualitative.Antique[4], hovertemplate='%{x}<extra></extra>'),
+    go.Bar(name='Received booster dose', y=grouped_df['Community'], x=grouped_df['Received booster dose'], orientation='h',
+            marker_color=px.colors.qualitative.Light24[8], hovertemplate='%{x}<extra></extra>')
 ])
 
     # Add vertical line for a constant value

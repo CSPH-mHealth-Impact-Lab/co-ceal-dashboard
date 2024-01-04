@@ -42,7 +42,7 @@ wave_2_demographic_figures = html.Div([
                 ], className="row-container"),
             html.Div([
                 dcc.Graph(id="wave-2-community-icicle-chart", className="figure", figure = wave_2_community_icicle_chart,
-                          config={"displayModeBar": displayModeBar, "displaylogo": displayModeBar},),
+                          config={"displayModeBar": True, "displaylogo": displayModeBar},),
                 dcc.Graph(id="wave-2-gender-bar-chart", className="figure", figure = wave_2_gender_bar_chart,
                           config={"displayModeBar": displayModeBar, "displaylogo": displayModeBar},),
                 ], className="row-container"),
