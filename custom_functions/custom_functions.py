@@ -28,7 +28,9 @@ def get_figure_layout(title, font_color=graph_title_font_color, font_size=graph_
 
 # Function to create a histogram with updated layout
 def create_histogram(data, column, title_text, num_bins=10, graph_title_font_color=graph_title_font_color, graph_title_font_size=graph_title_font_size):
+    print("number of rows in wave 2 data before drop: ", data.shape[0])
     data_cleaned = data.dropna(subset=[column])
+    print("number of rows in wave 2 data after drop: ", data.shape[0])
     fig = px.histogram(data_cleaned, x=column, nbins=num_bins, labels={column: 'Age'},text_auto=True)
     
     # Customize the appearance of the histogram

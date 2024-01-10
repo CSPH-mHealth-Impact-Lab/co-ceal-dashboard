@@ -10,6 +10,7 @@ load_dotenv()
 
 
 wave2_df = pd.read_excel("data/wave_2.xlsx",engine='openpyxl')
+print("number of rows in wave 2 data: ", wave2_df.shape[0]) 
 
 displayModeBar_str = os.environ.get("displayModeBar", "True")
 displayModeBar = displayModeBar_str.lower() == "true"
@@ -83,6 +84,7 @@ for col in vax_reason_cols:
 
 
 result_df = result_df.drop(columns=['count'])
+result_df = result_df.transpose()
 data_table = dash_table.DataTable(
     data=result_df.to_dict('records'),
     columns=[{"name": i, "id": i} for i in result_df.columns]
