@@ -1,5 +1,5 @@
 import dash_bootstrap_components as dbc
-from dash import html, dcc, callback, Input, Output
+from dash import html, dcc, callback, Input, Output,dash_table
 import dash
 import pandas as pd
 from custom_functions.custom_functions import *
@@ -67,8 +67,30 @@ wave_2_tab2_figures = html.Div([
                 ], className="row-container"),
         ])
 
+vax_reason_cols = [col for col in wave2_df.columns if 'ceal_vax_reasons_r2' in col]
+community_count = wave2_df.groupby('Community').size().reset_index(name='count')
+gender_count = wave2_df.groupby('Gender').size().reset_index(name='count')
+com_agg_df = wave2_df.groupby('Community').agg(**{col: (col, lambda x: (x==1).sum()) for col in vax_reason_cols}).reset_index()
+gen_agg_df = wave2_df.groupby('Gender').agg(**{col: (col, lambda x: (x==1).sum()) for col in vax_reason_cols}).reset_index()
+community_df = pd.merge(com_agg_df, community_count, on='Community')
+community_df.rename(columns={'Community': 'Category'}, inplace=True)
+gender_df = pd.merge(gen_agg_df, gender_count, on='Gender')
+gender_df.rename(columns={'Gender': 'Category'}, inplace=True)
+result_df = pd.concat([community_df, gender_df], axis=0)
+
+for col in vax_reason_cols:
+    result_df[col] = (result_df[col] / result_df['count'] * 100).round(1)
+
+
+result_df = result_df.drop(columns=['count'])
+data_table = dash_table.DataTable(
+    data=result_df.to_dict('records'),
+    columns=[{"name": i, "id": i} for i in result_df.columns]
+)
+
 wave_2_tab3_figures = html.Div([
             html.Div([
+                # data_table,
                 dcc.Graph(id="figure-3", className="figure",
                           config={"displayModeBar": displayModeBar, "displaylogo": displayModeBar},
                         figure=get_figure_layout("wave 2 tab 3 fig 1"),),

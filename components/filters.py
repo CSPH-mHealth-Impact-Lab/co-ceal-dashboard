@@ -5,8 +5,8 @@ available_languages = ['English', 'Somali', 'Spanish']
 available_genders = ['Man', 'Woman', 'Transgender female or trans woman', 'Other',
        'Prefer not to answer', 'Transgender male or trans man',
        'Nonbinary, genderqueer, or gender fluid']
-available_communities = ['PUEBLO Urban Latina/o/x', 'Somali Immigrant',
-       'SLV Rural Latina/o/x', 'FT MORGAN/GREELEY Rural AA/Black',
+available_communities = ['PUEBLO Urban Latina/o/x', 'DENVER Urban AA/Black',
+       'SLV Rural Latina/o/x', 'Somali Immigrant',
        'DENVER Urban Latina/o/x',
        'DENVER Urban American Indian/Alaska Native']
 
