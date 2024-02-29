@@ -31,15 +31,23 @@ layout = html.Div([
     
 ])
 
+# @callback(Output("wave-2-content", "children"), [Input("wave-2-tabs", "active_tab")])
+# def update_wave_2_tab(selected_tab):
+#     print(selected_tab)
+#     if selected_tab == "tab-1":
+#         return wave_2_figure_groups["tab-2"]
+#     elif selected_tab == "tab-2":
+#         return wave_2_figure_groups["tab-3"]
+#     return wave_2_figure_groups["wave-2-demographics-tab"]
+
 @callback(Output("wave-2-content", "children"), [Input("wave-2-tabs", "active_tab")])
 def update_wave_2_tab(selected_tab):
     print(selected_tab)
-    if selected_tab == "tab-1":
-        return wave_2_figure_groups["tab-2"]
-    elif selected_tab == "tab-2":
+    if selected_tab == "tab-2":
         return wave_2_figure_groups["tab-3"]
+    elif selected_tab == "tab-1":
+        return wave_2_figure_groups["tab-2"]
     return wave_2_figure_groups["wave-2-demographics-tab"]
-
 
 @callback(
     [Output('wave-2-age-histogram', 'figure'),
@@ -84,6 +92,44 @@ def callback_func(gender_values,language_values,community_values,income_values):
     return [wave_2_testing_bar_chart,wave_2_flu_vacaine_bar_chart,trust_by_community_bar_chart]
 
 @callback(
+    [Output('wave-2-multi', 'figure'),],
+    [Input('gender_filter', 'value'),
+    Input('language_filter', 'value'),
+    Input('community_filter', 'value'),
+    Input('income_filter', 'value'),
+    Input('radio-items-id', 'value'),])
+def callback_func(gender_values,language_values,community_values,income_values,radio_value):
+    
+    temp_df = wave2_df[wave2_df["Gender"].isin(gender_values)]
+    temp_df = temp_df[temp_df["Language"].isin(language_values)]
+    temp_df = temp_df[temp_df["Community"].isin(community_values)]
+    temp_df = temp_df[temp_df["Income"].isin(income_values)]
+    if radio_value == 'Vaccination Reasons':
+        figure = create_vaccine_reasons_scatter_plot(temp_df)
+    elif radio_value == 'Vaccination Concerns':
+        figure = create_vaccine_concerns_scatter_plot(temp_df)
+    elif radio_value == 'Vaccination Challenges':
+        figure = create_vaccine_challenges_scatter_plot(temp_df)
+    elif radio_value == 'Vaccination Barriers':
+        figure = create_vaccine_barriers_scatter_plot(temp_df)
+    elif radio_value == 'Vaccination Reasons for Children':
+        figure = create_vaccine_reasons_children_scatter_plot(temp_df)
+    elif radio_value == 'Vaccination Concerns for Children (Age:5-17)':
+        figure = create_vaccine_concerns_children_5_17_scatter_plot(temp_df)
+    elif radio_value == 'Vaccination Concerns for Children (Age:0-4)':
+        figure = create_vaccine_concerns_children_4_scatter_plot(temp_df)
+    elif radio_value == 'Vaccination Challenges for Children':
+        figure = create_vaccine_challenges_children_5_17_scatter_plot(temp_df)
+    elif radio_value == 'Vaccination Barriers for Children':
+        figure = create_vaccine_barriers_children_scatter_plot(temp_df)
+    else:
+        figure = create_vaccine_reasons_scatter_plot(temp_df)
+
+    # vaccine_reasons_scatter_plot = create_vaccine_reasons_scatter_plot(temp_df)
+    pathname = [gender_values,language_values,community_values,income_values]
+    return [figure]
+
+@callback(
 [Output('gender_filter', 'value'),
  Output('language_filter', 'value'),
  Output('community_filter', 'value'),
@@ -96,6 +142,9 @@ def callback_func(gender_values,language_values,community_values,income_values):
  State('language_filter', 'options'),
  State('community_filter', 'options'),
  State('income_filter', 'options'),])
+
+
+
 
 # def update_filters_select_unselect_all(btn1,btn2,btn3,btn4,feature_options_gender,feature_options_language,feature_options_community,feature_options_income):
 #     ctx = callback_context

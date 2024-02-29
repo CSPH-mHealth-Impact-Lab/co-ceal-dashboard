@@ -43,6 +43,7 @@ app.layout = html.Div([dcc.Location(id='url', refresh=False,pathname="/wave-2"),
 
 server = app.server
 if __name__ == '__main__':
-    app.run_server(host='0.0.0.0' , port=8050,debug=True,)
+    app.run_server(host='0.0.0.0', port=8050, debug=True, dev_tools_hot_reload=True, 
+                   dev_tools_hot_reload_interval=1000, dev_tools_hot_reload_watch_interval=100000)
 
 

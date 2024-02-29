@@ -482,3 +482,532 @@ def covid_vaccine_bar_chart(data,title_text, graph_title_font_color=graph_title_
         legend=dict(orientation="h",yanchor="bottom",y=1,xanchor="right",x=1)  # Decrease font size for x axis labels
     )
     return fig
+
+def create_vaccine_reasons_scatter_plot(data):
+    vax_reason_cols = [col for col in data.columns if 'ceal_vax_reasons_r2' in col]
+    community_count = data.groupby('Community').size().reset_index(name='count')
+    gender_count = data.groupby('Gender_recoded').size().reset_index(name='count')
+    com_agg_df = data.groupby('Community').agg(**{col: (col, lambda x: (x==1).sum()) for col in vax_reason_cols}).reset_index()
+    gen_agg_df = data.groupby('Gender_recoded').agg(**{col: (col, lambda x: (x==1).sum()) for col in vax_reason_cols}).reset_index()
+    community_df = pd.merge(com_agg_df, community_count, on='Community')
+    community_df['domain'] = 'Community'
+    community_df.rename(columns={'Community': 'Category'}, inplace=True)
+    gender_df = pd.merge(gen_agg_df, gender_count, on='Gender_recoded')
+    gender_df.rename(columns={'Gender_recoded': 'Category'}, inplace=True)
+    gender_df['domain'] = 'Gender_recoded'
+    result_df = pd.concat([community_df, gender_df], axis=0)
+
+    for col in vax_reason_cols:
+        result_df[col] = (result_df[col] / result_df['count'] * 100).round(1)
+    replace_dict = {
+        'ceal_vax_reasons_r2___1': 'Family Safety',
+        'ceal_vax_reasons_r2___2': 'Community Safety',
+        'ceal_vax_reasons_r2___3': 'Personal Safety',
+        'ceal_vax_reasons_r2___4': 'Chronic Health Problem',
+        'ceal_vax_reasons_r2___5': 'Doctor Recommendation',
+        'ceal_vax_reasons_r2___6': 'Avoid Severe Illness',
+        'ceal_vax_reasons_r2___7': 'Feel Safe Around People',
+        'ceal_vax_reasons_r2___8': 'Return to Normalcy',
+        'ceal_vax_reasons_r2___9': 'School/Work Requirement',
+        'ceal_vax_reasons_r2___10': 'Stop Wearing Masks',
+        'ceal_vax_reasons_r2___12': 'Community/Family Expectation',
+        'ceal_vax_reasons_r2___x': 'Would Not Vaccinate',
+        'ceal_vax_reasons_r2___oth': 'Other'
+    }
+
+    # result_df.rename(columns=rename_dict, inplace=True)
+
+    result_df = result_df.drop(columns=['count'])
+    melted_df = result_df.melt(id_vars=['domain','Category'], var_name='Reasons', value_name='Values')
+    melted_df['Sample size'] = None
+    for index, row in melted_df.iterrows():
+        melted_df.at[index, 'Sample size'] = data[(data[str(row['domain'])] == row['Category']) & (data[str(row['Reasons'])] == 1)].shape[0]
+    melted_df.replace(replace_dict, inplace=True)
+    melted_df.replace({"DENVER Urban American Indian/Alaska Native":"American Indian/Alaska Native"}, inplace=True)
+    fig_height = melted_df['Category'].nunique()*70 + 100
+    print(fig_height)
+    fig = px.scatter(melted_df, y='Category', x='Reasons', size='Values', color='Values', custom_data=['Sample size'],
+                      size_max=20, color_continuous_scale=['green', 'yellow', 'red'])
+    fig.update_layout(autosize=True, margin=dict(l=0, r=0, b=0, t=0), height=fig_height)
+    fig.update_traces(hovertemplate='Percentage: %{marker.size}<br>Sample size: %{customdata[0]}')
+    fig.update_xaxes(title_text='', tickangle=-45)
+    fig.update_yaxes(title_text='')
+
+    return fig
+
+def create_vaccine_concerns_scatter_plot(data):
+    vax_concerns_cols = [col for col in data.columns if 'ceal_vax_concerns_r2' in col]
+    vax_concerns_cols.remove('ceal_vax_concerns_r2___oth')
+    data = data[(data['ceal2_covid_vaxdose']!=1) & (data['ceal2_covid_vaxdose']!=2) & (data['ceal2_covid_vaxdose']!=3)]
+    community_count = data.groupby('Community').size().reset_index(name='count')
+    gender_count = data.groupby('Gender_recoded').size().reset_index(name='count')
+    com_agg_df = data.groupby('Community').agg(**{col: (col, lambda x: (x==1).sum()) for col in vax_concerns_cols}).reset_index()
+    gen_agg_df = data.groupby('Gender_recoded').agg(**{col: (col, lambda x: (x==1).sum()) for col in vax_concerns_cols}).reset_index()
+    community_df = pd.merge(com_agg_df, community_count, on='Community')
+    community_df['domain'] = 'Community'
+    community_df.rename(columns={'Community': 'Category'}, inplace=True)
+    gender_df = pd.merge(gen_agg_df, gender_count, on='Gender_recoded')
+    gender_df.rename(columns={'Gender_recoded': 'Category'}, inplace=True)
+    gender_df['domain'] = 'Gender_recoded'
+    result_df = pd.concat([community_df, gender_df], axis=0)
+
+    for col in vax_concerns_cols:
+        result_df[col] = (result_df[col] / result_df['count'] * 100).round(1)
+    replace_dict = {
+    'ceal_vax_concerns_r2___1': 'Allergic to Vaccines',
+    'ceal_vax_concerns_r2___2': 'Dislike Needles',
+    'ceal_vax_concerns_r2___22': 'Not at Risk',
+    'ceal_vax_concerns_r2___3': 'Not Concerned About Illness',
+    'ceal_vax_concerns_r2___4': 'Concerned About Side Effects',
+    'ceal_vax_concerns_r2___5': 'Doubts on Vaccine Efficacy',
+    'ceal_vax_concerns_r2___6': 'Safety Concerns',
+    'ceal_vax_concerns_r2___7': 'Pandemic Severity Doubts',
+    'ceal_vax_concerns_r2___9': 'Insufficient Information on Vaccine',
+    'ceal_vax_concerns_r2___11': 'Concerns About Fetal Cells',
+    'ceal_vax_concerns_r2___12': 'Concerns About Infertility',
+    'ceal_vax_concerns_r2___13r2': 'Already Had COVID-19',
+    'ceal_vax_concerns_r2___14': 'Fear of Getting COVID-19 From Vaccine',
+    'ceal_vax_concerns_r2___15': 'Concerns About DNA Change',
+    'ceal_vax_concerns_r2___17': 'Trust Issues With Vaccine Source',
+    'ceal_vax_concerns_r2___18r2a': 'Concerns About Showing ID',
+    'ceal_vax_concerns_r2___21r2': 'Religious Conflicts',
+    'ceal_vax_concerns_r2___23': 'Family/Community Disapproval',
+    'ceal_vax_concerns_r2___24': 'Fear of Infection at Vaccination Location'
+}
+    # result_df.rename(columns=rename_dict, inplace=True)
+
+    result_df = result_df.drop(columns=['count'])
+    melted_df = result_df.melt(id_vars=['domain','Category'], var_name='Concerns', value_name='Values')
+    melted_df['Sample size'] = None
+    for index, row in melted_df.iterrows():
+        melted_df.at[index, 'Sample size'] = data[(data[str(row['domain'])] == row['Category']) & (data[str(row['Concerns'])] == 1)].shape[0]
+    melted_df.replace(replace_dict, inplace=True)
+    melted_df.replace({"DENVER Urban American Indian/Alaska Native":"American Indian/Alaska Native"}, inplace=True)
+    fig_height = melted_df['Category'].nunique()*70 + 100
+    print(fig_height)
+    fig = px.scatter(melted_df, y='Category', x='Concerns', size='Values', color='Values', custom_data=['Sample size'],
+                      size_max=20, color_continuous_scale=['green', 'yellow', 'red'])
+    fig.update_layout(autosize=True, margin=dict(l=0, r=0, b=0, t=0), height=fig_height)
+    fig.update_traces(hovertemplate='Percentage: %{marker.size}<br>Sample size: %{customdata[0]}')
+    fig.update_xaxes(title_text='', tickangle=-45)
+    fig.update_yaxes(title_text='')
+
+    return fig
+
+def create_vaccine_challenges_scatter_plot(data):
+    vax_challenges_cols = [col for col in data.columns if 'ceal2_vax_challngs' in col]
+    vax_challenges_cols.remove('ceal2_vax_challngs___oth')
+    data = data[(data['ceal2_covid_vaxdose']==1) | (data['ceal2_covid_vaxdose']==2) | (data['ceal2_covid_vaxdose']==3)]
+    community_count = data.groupby('Community').size().reset_index(name='count')
+    gender_count = data.groupby('Gender_recoded').size().reset_index(name='count')
+    com_agg_df = data.groupby('Community').agg(**{col: (col, lambda x: (x==1).sum()) for col in vax_challenges_cols}).reset_index()
+    gen_agg_df = data.groupby('Gender_recoded').agg(**{col: (col, lambda x: (x==1).sum()) for col in vax_challenges_cols}).reset_index()
+    community_df = pd.merge(com_agg_df, community_count, on='Community')
+    community_df['domain'] = 'Community'
+    community_df.rename(columns={'Community': 'Category'}, inplace=True)
+    gender_df = pd.merge(gen_agg_df, gender_count, on='Gender_recoded')
+    gender_df.rename(columns={'Gender_recoded': 'Category'}, inplace=True)
+    gender_df['domain'] = 'Gender_recoded'
+    result_df = pd.concat([community_df, gender_df], axis=0)
+
+    for col in vax_challenges_cols:
+        result_df[col] = (result_df[col] / result_df['count'] * 100).round(1)
+    replace_dict = {
+    'ceal2_vax_challngs___20r2b': 'Did not know how to get an appointment',
+    'ceal2_vax_challngs___28': 'Appointment took too long',
+    'ceal2_vax_challngs___18r2a': 'Worried about showing ID',
+    'ceal2_vax_challngs___19r2a': 'No transportation',
+    'ceal2_vax_challngs___19r2b': 'Locations too far',
+    'ceal2_vax_challngs___20r2a': 'Did not know where to go',
+    'ceal2_vax_challngs___25': 'No childcare',
+    'ceal2_vax_challngs___16r2': 'Could not take time off work',
+    'ceal2_vax_challngs___26': 'Language barrier at location',
+    'ceal2_vax_challngs___27': 'No information in preferred language',
+    'ceal2_vax_challngs___6': 'Safety concerns',
+    'ceal2_vax_challngs___24': 'Fear of infection at location',
+    'ceal2_vax_challngs___4r2': 'Concerned about side effects',
+    'ceal2_vax_challngs___5': 'Doubts on vaccine efficacy',
+    'ceal2_vax_challngs___1': 'Allergic to vaccines',
+    'ceal2_vax_challngs___2': 'Dislike needles',
+    'ceal2_vax_challngs___21r2': 'Religious conflicts',
+    'ceal2_vax_challngs___23': 'Disapproval from important people',
+    'ceal2_vax_challngs___x': 'None',
+    'ceal2_vax_challngs___29':'Could not take time off work'
+}
+    # result_df.rename(columns=rename_dict, inplace=True)
+
+    result_df = result_df.drop(columns=['count'])
+    melted_df = result_df.melt(id_vars=['domain','Category'], var_name='Challenges', value_name='Values')
+    melted_df['Sample size'] = None
+    for index, row in melted_df.iterrows():
+        melted_df.at[index, 'Sample size'] = data[(data[str(row['domain'])] == row['Category']) & (data[str(row['Challenges'])] == 1)].shape[0]
+    melted_df.replace(replace_dict, inplace=True)
+    melted_df.replace({"DENVER Urban American Indian/Alaska Native":"American Indian/Alaska Native"}, inplace=True)
+    fig_height = melted_df['Category'].nunique()*70 + 100
+    print(fig_height)
+    fig = px.scatter(melted_df, y='Category', x='Challenges', size='Values', color='Values', custom_data=['Sample size'],
+                      size_max=20, color_continuous_scale=['green', 'yellow', 'red'])
+    fig.update_layout(autosize=True, margin=dict(l=0, r=0, b=0, t=0), height=fig_height)
+    fig.update_traces(hovertemplate='Percentage: %{marker.size}<br>Sample size: %{customdata[0]}')
+    fig.update_xaxes(title_text='', tickangle=-45)
+    fig.update_yaxes(title_text='')
+
+    return fig
+
+def  create_vaccine_barriers_scatter_plot(data):
+    vax_barriers_cols = [col for col in data.columns if 'ceal2_vax_barriers' in col]
+    vax_barriers_cols.remove('ceal2_vax_barriers___oth')
+    data = data[(data['ceal2_covid_vaxdose']!=1) & (data['ceal2_covid_vaxdose']!=2) & (data['ceal2_covid_vaxdose']!=3)]
+    community_count = data.groupby('Community').size().reset_index(name='count')
+    gender_count = data.groupby('Gender_recoded').size().reset_index(name='count')
+    com_agg_df = data.groupby('Community').agg(**{col: (col, lambda x: (x==1).sum()) for col in vax_barriers_cols}).reset_index()
+    gen_agg_df = data.groupby('Gender_recoded').agg(**{col: (col, lambda x: (x==1).sum()) for col in vax_barriers_cols}).reset_index()
+    community_df = pd.merge(com_agg_df, community_count, on='Community')
+    community_df['domain'] = 'Community'
+    community_df.rename(columns={'Community': 'Category'}, inplace=True)
+    gender_df = pd.merge(gen_agg_df, gender_count, on='Gender_recoded')
+    gender_df.rename(columns={'Gender_recoded': 'Category'}, inplace=True)
+    gender_df['domain'] = 'Gender_recoded'
+    result_df = pd.concat([community_df, gender_df], axis=0)
+
+    for col in vax_barriers_cols:
+        result_df[col] = (result_df[col] / result_df['count'] * 100).round(1)
+    replace_dict = {
+        'ceal2_vax_barriers___8r2': 'Cannot afford it',
+        'ceal2_vax_barriers___20r2a': 'Do not know where to get vaccinated',
+        'ceal2_vax_barriers___19r2a': 'No transportation',
+        'ceal2_vax_barriers___19r2b': 'Locations too far or hard to get to',
+        'ceal2_vax_barriers___16r2': 'Cannot take time off work',
+        'ceal2_vax_barriers___20r2b': 'Do not know how to make an appointment',
+        'ceal2_vax_barriers___25': 'No childcare',
+        'ceal2_vax_barriers___26': 'Language barrier at location',
+        'ceal2_vax_barriers___18r2b': 'No social security number or government issued ID',
+        'ceal2_vax_barriers___x': 'None'
+    }
+    # result_df.rename(columns=rename_dict, inplace=True)
+
+    result_df = result_df.drop(columns=['count'])
+    melted_df = result_df.melt(id_vars=['domain','Category'], var_name='Barriers', value_name='Values')
+    melted_df['Sample size'] = None
+    for index, row in melted_df.iterrows():
+        melted_df.at[index, 'Sample size'] = data[(data[str(row['domain'])] == row['Category']) & (data[str(row['Barriers'])] == 1)].shape[0]
+    melted_df.replace(replace_dict, inplace=True)
+    melted_df.replace({"DENVER Urban American Indian/Alaska Native":"American Indian/Alaska Native"}, inplace=True)
+    fig_height = melted_df['Category'].nunique()*70 + 100
+    print(fig_height)
+    fig = px.scatter(melted_df, y='Category', x='Barriers', size='Values', color='Values', custom_data=['Sample size'],
+                      size_max=20, color_continuous_scale=['green', 'yellow', 'red'])
+    fig.update_layout(autosize=True, margin=dict(l=0, r=0, b=0, t=0), height=fig_height)
+    fig.update_traces(hovertemplate='Percentage: %{marker.size}<br>Sample size: %{customdata[0]}')
+    fig.update_xaxes(title_text='', tickangle=-45)
+    fig.update_yaxes(title_text='')
+
+    return fig
+
+def create_vaccine_reasons_children_scatter_plot(data):
+    vax_reasons_ch_cols = [col for col in data.columns if 'vax_reasons_ch_r2' in col]
+    vax_reasons_ch_cols.remove('vax_reasons_ch_r2___oth')
+    data = data[(data['parent_ch1217'] == 1) | (data['parent_ch511'] == 1) | (data['parent_ch04'] == 1)]
+    community_count = data.groupby('Community').size().reset_index(name='count')
+    gender_count = data.groupby('Gender_recoded').size().reset_index(name='count')
+    com_agg_df = data.groupby('Community').agg(**{col: (col, lambda x: (x==1).sum()) for col in vax_reasons_ch_cols}).reset_index()
+    gen_agg_df = data.groupby('Gender_recoded').agg(**{col: (col, lambda x: (x==1).sum()) for col in vax_reasons_ch_cols}).reset_index()
+    community_df = pd.merge(com_agg_df, community_count, on='Community')
+    community_df['domain'] = 'Community'
+    community_df.rename(columns={'Community': 'Category'}, inplace=True)
+    gender_df = pd.merge(gen_agg_df, gender_count, on='Gender_recoded')
+    gender_df.rename(columns={'Gender_recoded': 'Category'}, inplace=True)
+    gender_df['domain'] = 'Gender_recoded'
+    result_df = pd.concat([community_df, gender_df], axis=0)
+
+    for col in vax_reasons_ch_cols:
+        result_df[col] = (result_df[col] / result_df['count'] * 100).round(1)
+    replace_dict = {
+        'vax_reasons_ch_r2___1': 'Keep family safe',
+        'vax_reasons_ch_r2___2': 'Keep community safe',
+        'vax_reasons_ch_r2___3': 'Keep child safe',
+        'vax_reasons_ch_r2___4': 'Child has a chronic health problem',
+        'vax_reasons_ch_r2___5': 'Doctor recommendation',
+        'vax_reasons_ch_r2___6': 'Prevent severe illness',
+        'vax_reasons_ch_r2___7': 'Child feels safe around others',
+        'vax_reasons_ch_r2___8': 'Belief in returning to normal',
+        'vax_reasons_ch_r2___9': 'School or workplace requirement',
+        'vax_reasons_ch_r2___10': 'Child can stop wearing masks',
+        'vax_reasons_ch_r2___12': 'Community or family expectations',
+        'vax_reasons_ch_r2___x': 'None (Would not vaccinate child)'
+    }
+
+    # result_df.rename(columns=rename_dict, inplace=True)
+
+    result_df = result_df.drop(columns=['count'])
+    melted_df = result_df.melt(id_vars=['domain','Category'], var_name='Reasons - Children', value_name='Values')
+    melted_df['Sample size'] = None
+    for index, row in melted_df.iterrows():
+        melted_df.at[index, 'Sample size'] = data[(data[str(row['domain'])] == row['Category']) & (data[str(row['Reasons - Children'])] == 1)].shape[0]
+    melted_df.replace(replace_dict, inplace=True)
+    melted_df.replace({"DENVER Urban American Indian/Alaska Native":"American Indian/Alaska Native"}, inplace=True)
+    fig_height = melted_df['Category'].nunique()*70 + 100
+    print(fig_height)
+    fig = px.scatter(melted_df, y='Category', x='Reasons - Children', size='Values', color='Values', custom_data=['Sample size'],
+                      size_max=20, color_continuous_scale=['green', 'yellow', 'red'])
+    fig.update_layout(autosize=True, margin=dict(l=0, r=0, b=0, t=0), height=fig_height)
+    fig.update_traces(hovertemplate='Percentage: %{marker.size}<br>Sample size: %{customdata[0]}')
+    fig.update_xaxes(title_text='', tickangle=-45)
+    fig.update_yaxes(title_text='')
+
+    return fig
+
+def create_vaccine_concerns_children_5_17_scatter_plot(data):
+    vax_concerns_ch_cols = [col for col in data.columns if 'vax_concerns_ch517' in col]
+    vax_concerns_ch_cols.remove('vax_concerns_ch517___oth')
+    vax_concerns_ch_cols.remove('vax_concerns_ch517_spec')
+    data = data[((data['parent_ch1217'] == 1) & (data['covid_vaxdose_ch1217'] != 1) 
+                    & (data['covid_vaxdose_ch1217'] != 2) & (data['covid_vaxdose_ch1217'] != 3)) | 
+                    ((data['parent_ch511'] == 1) & (data['covid_vaxdose_ch511'] != 1) & 
+                     (data['covid_vaxdose_ch511'] != 2) & (data['covid_vaxdose_ch511'] != 3))]
+    community_count = data.groupby('Community').size().reset_index(name='count')
+    gender_count = data.groupby('Gender_recoded').size().reset_index(name='count')
+    com_agg_df = data.groupby('Community').agg(**{col: (col, lambda x: (x==1).sum()) for col in vax_concerns_ch_cols}).reset_index()
+    gen_agg_df = data.groupby('Gender_recoded').agg(**{col: (col, lambda x: (x==1).sum()) for col in vax_concerns_ch_cols}).reset_index()
+    community_df = pd.merge(com_agg_df, community_count, on='Community')
+    community_df['domain'] = 'Community'
+    community_df.rename(columns={'Community': 'Category'}, inplace=True)
+    gender_df = pd.merge(gen_agg_df, gender_count, on='Gender_recoded')
+    gender_df.rename(columns={'Gender_recoded': 'Category'}, inplace=True)
+    gender_df['domain'] = 'Gender_recoded'
+    result_df = pd.concat([community_df, gender_df], axis=0)
+
+    for col in vax_concerns_ch_cols:
+        result_df[col] = (result_df[col] / result_df['count'] * 100).round(1)
+    replace_dict = {
+        'vax_concerns_ch517___1': 'Child is allergic to vaccines',
+        'vax_concerns_ch517___2': 'Child dislikes needles',
+        'vax_concerns_ch517___22': 'Child not at risk',
+        'vax_concerns_ch517___3': 'Not concerned about child getting sick',
+        'vax_concerns_ch517___4': 'Concerned about side effects',
+        'vax_concerns_ch517___5': 'Doubts on vaccine efficacy',
+        'vax_concerns_ch517___6': 'Safety concerns',
+        'vax_concerns_ch517___7': 'Pandemic severity doubts',
+        'vax_concerns_ch517___9': 'Insufficient information on vaccine',
+        'vax_concerns_ch517___11': 'Concerns about fetal cells',
+        'vax_concerns_ch517___12': 'Concerns about infertility',
+        'vax_concerns_ch517___13r2': 'Child already had COVID-19',
+        'vax_concerns_ch517___14': 'Fear of getting COVID-19 from vaccine',
+        'vax_concerns_ch517___15': 'Concerns about DNA change',
+        'vax_concerns_ch517___17': 'Trust issues with vaccine source',
+        'vax_concerns_ch517___18r2a': 'Concerns about showing ID',
+        'vax_concerns_ch517___21': 'Concerns about school performance',
+        'vax_concerns_ch517___31': 'Religious conflicts',
+        'vax_concerns_ch517___23': 'Family/Community disapproval',
+        'vax_concerns_ch517___24': 'Fear of infection at vaccination location'
+    }
+    # result_df.rename(columns=rename_dict, inplace=True)
+
+    result_df = result_df.drop(columns=['count'])
+    melted_df = result_df.melt(id_vars=['domain','Category'], var_name='Concerns - Children', value_name='Values')
+    melted_df['Sample size'] = None
+    for index, row in melted_df.iterrows():
+        melted_df.at[index, 'Sample size'] = data[(data[str(row['domain'])] == row['Category']) & (data[str(row['Concerns - Children'])] == 1)].shape[0]
+    melted_df.replace(replace_dict, inplace=True)
+    melted_df.replace({"DENVER Urban American Indian/Alaska Native":"American Indian/Alaska Native"}, inplace=True)
+    fig_height = melted_df['Category'].nunique()*70 + 100
+    print(fig_height)
+    fig = px.scatter(melted_df, y='Category', x='Concerns - Children', size='Values', color='Values', custom_data=['Sample size'],
+                      size_max=20, color_continuous_scale=['green', 'yellow', 'red'])
+    fig.update_layout(autosize=True, margin=dict(l=0, r=0, b=0, t=0), height=fig_height)
+    fig.update_traces(hovertemplate='Percentage: %{marker.size}<br>Sample size: %{customdata[0]}')
+    fig.update_xaxes(title_text='', tickangle=-45)
+    fig.update_yaxes(title_text='')
+
+    return fig
+
+def create_vaccine_concerns_children_4_scatter_plot(data):
+    vax_concerns_ch_cols = [col for col in data.columns if 'vax_concerns_ch04' in col]
+    vax_concerns_ch_cols.remove('vax_concerns_ch04___oth')
+    vax_concerns_ch_cols.remove('vax_concerns_ch04_spec')
+    data = data[(data['parent_ch04'] == 1) & (data['parent_ch1217'] != 1) 
+                    & (data['parent_ch511'] != 1)]
+    community_count = data.groupby('Community').size().reset_index(name='count')
+    gender_count = data.groupby('Gender_recoded').size().reset_index(name='count')
+    com_agg_df = data.groupby('Community').agg(**{col: (col, lambda x: (x==1).sum()) for col in vax_concerns_ch_cols}).reset_index()
+    gen_agg_df = data.groupby('Gender_recoded').agg(**{col: (col, lambda x: (x==1).sum()) for col in vax_concerns_ch_cols}).reset_index()
+    community_df = pd.merge(com_agg_df, community_count, on='Community')
+    community_df['domain'] = 'Community'
+    community_df.rename(columns={'Community': 'Category'}, inplace=True)
+    gender_df = pd.merge(gen_agg_df, gender_count, on='Gender_recoded')
+    gender_df.rename(columns={'Gender_recoded': 'Category'}, inplace=True)
+    gender_df['domain'] = 'Gender_recoded'
+    result_df = pd.concat([community_df, gender_df], axis=0)
+
+    for col in vax_concerns_ch_cols:
+        result_df[col] = (result_df[col] / result_df['count'] * 100).round(1)
+    replace_dict = {
+        'vax_concerns_ch04___1': 'Child is allergic to vaccines',
+        'vax_concerns_ch04___2': 'Child dislikes needles',
+        'vax_concerns_ch04___22': 'Child not at risk',
+        'vax_concerns_ch04___3': 'Not concerned about child getting sick',
+        'vax_concerns_ch04___4': 'Concerned about side effects',
+        'vax_concerns_ch04___5': 'Doubts on vaccine efficacy',
+        'vax_concerns_ch04___6': 'Safety concerns',
+        'vax_concerns_ch04___7': 'Pandemic severity doubts',
+        'vax_concerns_ch04___8': 'Do not want to pay for it',
+        'vax_concerns_ch04___9': 'Insufficient information on vaccine',
+        'vax_concerns_ch04___11': 'Concerns about fetal cells',
+        'vax_concerns_ch04___12': 'Concerns about infertility',
+        'vax_concerns_ch04___13r2': 'Child already had COVID-19',
+        'vax_concerns_ch04___14': 'Fear of getting COVID-19 from vaccine',
+        'vax_concerns_ch04___15': 'Concerns about DNA change',
+        'vax_concerns_ch04___16r2': 'Cannot take time off work',
+        'vax_concerns_ch04___17': 'Trust issues with vaccine source',
+        'vax_concerns_ch04___18r2a': 'Concerns about showing ID',
+        'vax_concerns_ch04___18r2b': 'No social security number or government issued ID',
+        'vax_concerns_ch04___19r2a': 'No transportation',
+        'vax_concerns_ch04___19r2b': 'Locations too far or hard to get to',
+        'vax_concerns_ch04___20r2a': 'Do not know where to go for vaccination',
+        'vax_concerns_ch04___20r2b': 'Do not know how to get an appointment',
+        'vax_concerns_ch04___21': 'Concerns about school performance',
+        'vax_concerns_ch04___31': 'Religious conflicts',
+        'vax_concerns_ch04___23': 'Family/Community disapproval',
+        'vax_concerns_ch04___24': 'Fear of infection at vaccination location',
+        'vax_concerns_ch04___25': 'No childcare',
+        'vax_concerns_ch04___26': 'Language barrier at location',
+        'vax_concerns_ch04___x': 'None'
+    }
+
+    result_df = result_df.drop(columns=['count'])
+    melted_df = result_df.melt(id_vars=['domain','Category'], var_name='Concerns - Children', value_name='Values')
+    melted_df['Sample size'] = None
+    for index, row in melted_df.iterrows():
+        melted_df.at[index, 'Sample size'] = data[(data[str(row['domain'])] == row['Category']) & (data[str(row['Concerns - Children'])] == 1)].shape[0]
+    melted_df.replace(replace_dict, inplace=True)
+    melted_df.replace({"DENVER Urban American Indian/Alaska Native":"American Indian/Alaska Native"}, inplace=True)
+    fig_height = melted_df['Category'].nunique()*70 + 100
+    print(fig_height)
+    fig = px.scatter(melted_df, y='Category', x='Concerns - Children', size='Values', color='Values', custom_data=['Sample size'],
+                      size_max=20, color_continuous_scale=['green', 'yellow', 'red'])
+    fig.update_layout(autosize=True, margin=dict(l=0, r=0, b=0, t=0), height=fig_height)
+    fig.update_traces(hovertemplate='Percentage: %{marker.size}<br>Sample size: %{customdata[0]}')
+    fig.update_xaxes(title_text='', tickangle=-45)
+    fig.update_yaxes(title_text='')
+
+    return fig
+
+def create_vaccine_challenges_children_5_17_scatter_plot(data):
+    vax_challenges_ch_cols = [col for col in data.columns if 'vax_challngs_ch517' in col]
+    vax_challenges_ch_cols.remove('vax_challngs_ch517___oth')
+    vax_challenges_ch_cols.remove('vax_challngs_ch517_spec')
+    data = data[((data['parent_ch1217'] == 1) & ((data['covid_vaxdose_ch1217'] == 1) | 
+            (data['covid_vaxdose_ch1217'] == 2) | (data['covid_vaxdose_ch1217'] == 3)) & 
+            (data['parent_ch511'] == 0)) | ((data['parent_ch511'] == 1) & 
+            ((data['covid_vaxdose_ch511'] == 1) | (data['covid_vaxdose_ch511'] == 2) | 
+             (data['covid_vaxdose_ch511'] == 3)) & (data['parent_ch1217'] == 0)) | 
+             ((data['parent_ch1217'] == 1) & ((data['covid_vaxdose_ch1217'] == 1) | 
+            (data['covid_vaxdose_ch1217'] == 2) | (data['covid_vaxdose_ch1217'] == 3)) & 
+            (data['parent_ch511'] == 1) & ((data['covid_vaxdose_ch511'] == 1) | 
+            (data['covid_vaxdose_ch511'] == 2) | (data['covid_vaxdose_ch511'] == 3)))]
+    community_count = data.groupby('Community').size().reset_index(name='count')
+    gender_count = data.groupby('Gender_recoded').size().reset_index(name='count')
+    com_agg_df = data.groupby('Community').agg(**{col: (col, lambda x: (x==1).sum()) for col in vax_challenges_ch_cols}).reset_index()
+    gen_agg_df = data.groupby('Gender_recoded').agg(**{col: (col, lambda x: (x==1).sum()) for col in vax_challenges_ch_cols}).reset_index()
+    community_df = pd.merge(com_agg_df, community_count, on='Community')
+    community_df['domain'] = 'Community'
+    community_df.rename(columns={'Community': 'Category'}, inplace=True)
+    gender_df = pd.merge(gen_agg_df, gender_count, on='Gender_recoded')
+    gender_df.rename(columns={'Gender_recoded': 'Category'}, inplace=True)
+    gender_df['domain'] = 'Gender_recoded'
+    result_df = pd.concat([community_df, gender_df], axis=0)
+
+    for col in vax_challenges_ch_cols:
+        result_df[col] = (result_df[col] / result_df['count'] * 100).round(1)
+    replace_dict = {
+    'vax_challngs_ch517___20r2b': 'Did not know how to get an appointment',
+    'vax_challngs_ch517___28': 'Appointment took too long',
+    'vax_challngs_ch517___18r2a': 'Worried about showing ID',
+    'vax_challngs_ch517___19r2a': 'No transportation',
+    'vax_challngs_ch517___19r2b': 'Locations too far',
+    'vax_challngs_ch517___20r2a': 'Did not know where to go',
+    'vax_challngs_ch517___25': 'No childcare',
+    'vax_challngs_ch517___16r2': 'Could not take time off work',
+    'vax_challngs_ch517___26': 'Language barrier at location',
+    'vax_challngs_ch517___27': 'No information in preferred language',
+    'vax_challngs_ch517___6': 'Safety concerns',
+    'vax_challngs_ch517___24': 'Fear of infection at location',
+    'vax_challngs_ch517___4r2': 'Concerned about side effects',
+    'vax_challngs_ch517___5': 'Doubts on vaccine efficacy',
+    'vax_challngs_ch517___1': 'Child is allergic to vaccines',
+    'vax_challngs_ch517___2': 'Child dislikes needles',
+    'vax_challngs_ch517___31': 'Religious conflicts',
+    'vax_challngs_ch517___23': 'Disapproval from important people',
+    'vax_challngs_ch517___x': 'None',
+    'vax_challngs_ch517___19r2aa': 'No transportation'
+}
+
+    result_df = result_df.drop(columns=['count'])
+    melted_df = result_df.melt(id_vars=['domain','Category'], var_name='Challenges - Children', value_name='Values')
+    melted_df['Sample size'] = None
+    for index, row in melted_df.iterrows():
+        melted_df.at[index, 'Sample size'] = data[(data[str(row['domain'])] == row['Category']) & (data[str(row['Challenges - Children'])] == 1)].shape[0]
+    melted_df.replace(replace_dict, inplace=True)
+    melted_df.replace({"DENVER Urban American Indian/Alaska Native":"American Indian/Alaska Native"}, inplace=True)
+    fig_height = melted_df['Category'].nunique()*70 + 100
+    print(fig_height)
+    fig = px.scatter(melted_df, y='Category', x='Challenges - Children', size='Values', color='Values', custom_data=['Sample size'],
+                      size_max=20, color_continuous_scale=['green', 'yellow', 'red'])
+    fig.update_layout(autosize=True, margin=dict(l=0, r=0, b=0, t=0), height=fig_height)
+    fig.update_traces(hovertemplate='Percentage: %{marker.size}<br>Sample size: %{customdata[0]}')
+    fig.update_xaxes(title_text='', tickangle=-45)
+    fig.update_yaxes(title_text='')
+
+    return fig
+
+def create_vaccine_barriers_children_scatter_plot(data):
+    vax_barriers_ch_cols = [col for col in data.columns if 'vax_barriers_ch517' in col]
+    vax_barriers_ch_cols.remove('vax_barriers_ch517___oth')
+    vax_barriers_ch_cols.remove('vax_barriers_ch517_spec')
+    data = data[((data['parent_ch1217'] == 1) & (data['covid_vaxdose_ch1217'] != 1) & (data['covid_vaxdose_ch1217'] != 2)
+              & (data['covid_vaxdose_ch1217'] != 3)) | ((data['parent_ch511'] == 1) & (data['covid_vaxdose_ch511'] != 1)
+             & (data['covid_vaxdose_ch511'] != 2) & (data['covid_vaxdose_ch511'] != 3))]
+    community_count = data.groupby('Community').size().reset_index(name='count')
+    gender_count = data.groupby('Gender_recoded').size().reset_index(name='count')
+    com_agg_df = data.groupby('Community').agg(**{col: (col, lambda x: (x==1).sum()) for col in vax_barriers_ch_cols}).reset_index()
+    gen_agg_df = data.groupby('Gender_recoded').agg(**{col: (col, lambda x: (x==1).sum()) for col in vax_barriers_ch_cols}).reset_index()
+    community_df = pd.merge(com_agg_df, community_count, on='Community')
+    community_df['domain'] = 'Community'
+    community_df.rename(columns={'Community': 'Category'}, inplace=True)
+    gender_df = pd.merge(gen_agg_df, gender_count, on='Gender_recoded')
+    gender_df.rename(columns={'Gender_recoded': 'Category'}, inplace=True)
+    gender_df['domain'] = 'Gender_recoded'
+    result_df = pd.concat([community_df, gender_df], axis=0)
+
+    for col in vax_barriers_ch_cols:
+        result_df[col] = (result_df[col] / result_df['count'] * 100).round(1)
+    replace_dict = {
+        'vax_barriers_ch517___8r2': 'Cannot pay for it',
+        'vax_barriers_ch517___20r2a': 'Do not know where to get child vaccinated',
+        'vax_barriers_ch517___19r2a': 'No transportation',
+        'vax_barriers_ch517___19r2b': 'Locations too far or hard to get to',
+        'vax_barriers_ch517___16r2': 'Cannot take time off work',
+        'vax_barriers_ch517___20r2b': 'Do not know how to make an appointment',
+        'vax_barriers_ch517___25': 'No childcare',
+        'vax_barriers_ch517___26': 'Language barrier at location',
+        'vax_barriers_ch517___18r2b': 'No social security number or government issued ID',
+        'vax_barriers_ch517___x': 'None'
+    }
+
+    result_df = result_df.drop(columns=['count'])
+    melted_df = result_df.melt(id_vars=['domain','Category'], var_name='Barriers - Children', value_name='Values')
+    melted_df['Sample size'] = None
+    for index, row in melted_df.iterrows():
+        melted_df.at[index, 'Sample size'] = data[(data[str(row['domain'])] == row['Category']) & (data[str(row['Barriers - Children'])] == 1)].shape[0]
+    melted_df.replace(replace_dict, inplace=True)
+    melted_df.replace({"DENVER Urban American Indian/Alaska Native":"American Indian/Alaska Native"}, inplace=True)
+    fig_height = melted_df['Category'].nunique()*70 + 100
+    print(fig_height)
+    fig = px.scatter(melted_df, y='Category', x='Barriers - Children', size='Values', color='Values', custom_data=['Sample size'],
+                      size_max=20, color_continuous_scale=['green', 'yellow', 'red'])
+    fig.update_layout(autosize=True, margin=dict(l=0, r=0, b=0, t=0), height=fig_height)
+    fig.update_traces(hovertemplate='Percentage: %{marker.size}<br>Sample size: %{customdata[0]}')
+    fig.update_xaxes(title_text='', tickangle=-45)
+    fig.update_yaxes(title_text='')
+
+    return fig

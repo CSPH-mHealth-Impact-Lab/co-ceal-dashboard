@@ -10,6 +10,7 @@ load_dotenv()
 
 
 wave2_df = pd.read_excel("data/wave_2.xlsx",engine='openpyxl')
+wave2_df['Gender_recoded'] = wave2_df['Gender'].apply(lambda x: x if x in ['Man', 'Woman'] else 'Other Gender')
 print("number of rows in wave 2 data: ", wave2_df.shape[0]) 
 
 displayModeBar_str = os.environ.get("displayModeBar", "True")
@@ -68,47 +69,39 @@ wave_2_tab2_figures = html.Div([
                 ], className="row-container"),
         ])
 
-vax_reason_cols = [col for col in wave2_df.columns if 'ceal_vax_reasons_r2' in col]
-community_count = wave2_df.groupby('Community').size().reset_index(name='count')
-gender_count = wave2_df.groupby('Gender').size().reset_index(name='count')
-com_agg_df = wave2_df.groupby('Community').agg(**{col: (col, lambda x: (x==1).sum()) for col in vax_reason_cols}).reset_index()
-gen_agg_df = wave2_df.groupby('Gender').agg(**{col: (col, lambda x: (x==1).sum()) for col in vax_reason_cols}).reset_index()
-community_df = pd.merge(com_agg_df, community_count, on='Community')
-community_df.rename(columns={'Community': 'Category'}, inplace=True)
-gender_df = pd.merge(gen_agg_df, gender_count, on='Gender')
-gender_df.rename(columns={'Gender': 'Category'}, inplace=True)
-result_df = pd.concat([community_df, gender_df], axis=0)
 
-for col in vax_reason_cols:
-    result_df[col] = (result_df[col] / result_df['count'] * 100).round(1)
-
-
-result_df = result_df.drop(columns=['count'])
-result_df = result_df.transpose()
-data_table = dash_table.DataTable(
-    data=result_df.to_dict('records'),
-    columns=[{"name": i, "id": i} for i in result_df.columns]
-)
+vaccine_reasons_scatter_plot = create_vaccine_reasons_scatter_plot(wave2_df)
+vaccine_concerns_scatter_plot = create_vaccine_concerns_scatter_plot(wave2_df)
+vaccine_challenges_scatter_plot = create_vaccine_challenges_scatter_plot(wave2_df)
+vaccine_barriers_scatter_plot = create_vaccine_barriers_scatter_plot(wave2_df)
+vaccine_reasons_children_scatter_plot = create_vaccine_reasons_children_scatter_plot(wave2_df)
+vaccine_concerns_children_5_17_scatter_plot = create_vaccine_concerns_children_5_17_scatter_plot(wave2_df)
+vaccine_concerns_children_4_scatter_plot = create_vaccine_concerns_children_4_scatter_plot(wave2_df)
+vaccine_barriers_children_scatter_plot = create_vaccine_barriers_children_scatter_plot(wave2_df)
 
 wave_2_tab3_figures = html.Div([
-            html.Div([
-                # data_table,
-                dcc.Graph(id="figure-3", className="figure",
-                          config={"displayModeBar": displayModeBar, "displaylogo": displayModeBar},
-                        figure=get_figure_layout("wave 2 tab 3 fig 1"),),
-                dcc.Graph(id="figure-4", className="figure",
-                          config={"displayModeBar": displayModeBar, "displaylogo": displayModeBar},
-                        figure=get_figure_layout("wave 2 tab 3 fig 2"),),
-                ], className="row-container"),
-            html.Div([
-                dcc.Graph(id="figure-3", className="figure",
-                          config={"displayModeBar": displayModeBar, "displaylogo": displayModeBar},
-                        figure=get_figure_layout("wave 2 tab 3 fig 3"),),
-                dcc.Graph(id="figure-4", className="figure",
-                          config={"displayModeBar": displayModeBar, "displaylogo": displayModeBar},
-                        figure=get_figure_layout("wave 2 tab 3 fig 4"),),
-                ], className="row-container"),
-        ])
+    html.Div([
+        dbc.Row(dbc.Col(html.Div([dcc.RadioItems(
+            id='radio-items-id',
+            options=[
+        {'label': 'Vaccination Reasons', 'value': 'Vaccination Reasons'},
+        {'label': 'Vaccination Concerns', 'value': 'Vaccination Concerns'},
+        {'label': 'Vaccination Challenges', 'value': 'Vaccination Challenges'},
+        {'label': 'Vaccination Barriers', 'value': 'Vaccination Barriers'},
+        {'label': 'Vaccination Reasons for Children', 'value': 'Vaccination Reasons for Children'},
+        {'label': 'Vaccination Concerns for Children (Age:5-17)', 'value': 'Vaccination Concerns for Children (Age:5-17)'},
+        {'label': 'Vaccination Concerns for Children (Age:0-4)', 'value': 'Vaccination Concerns for Children (Age:0-4)'},
+        {'label': 'Vaccination Challenges for Children', 'value': 'Vaccination Challenges for Children'},
+        {'label': 'Vaccination Barriers for Children', 'value': 'Vaccination Barriers for Children'}
+    ],
+            value='Vaccination Reasons', inline=True,inputStyle={"margin-right": "10px","margin-left": "10px"})
+        ]))),
+    ], className="row-container m-2 p-2 text-center"),
+    html.Div([
+        dcc.Graph(id="wave-2-multi", className="figure",
+                  config={"displayModeBar": False, "displaylogo": False}, style={'width': '100%'}),
+    ], className="row-container m-2 p-2 text-center"),
+])
 
 
 wave_2_figure_groups = {
@@ -121,11 +114,14 @@ wave_2_tabs = html.Div(
     [
         dbc.Tabs([
             dbc.Tab(label="Demographics", id="wave-2-demographics-tab", className="nav-item",
-                    active_tab_style={"textTransform": "uppercase"}, active_label_style={"color": "#FB79B3"}, active_tab_class_name="fw-bold fst-italic", activeLabelClassName="text-success"),
+                    active_tab_style={"textTransform": "uppercase"}, active_label_style={"color": "#FB79B3"}, 
+                    active_tab_class_name="fw-bold fst-italic", activeLabelClassName="text-success"),
             dbc.Tab(label="Vaccine Behaviour", id="tab-2", className="nav-item",
-                    active_tab_style={"textTransform": "uppercase"}, active_label_style={"color": "#FB79B3"}, active_tab_class_name="fw-bold fst-italic", activeLabelClassName="text-success"),
-            dbc.Tab(label="Tab 3", id="tab-3", className="nav-item",
-                    active_tab_style={"textTransform": "uppercase"}, active_label_style={"color": "#FB79B3"}, active_tab_class_name="fw-bold fst-italic", activeLabelClassName="text-success"),
+                    active_tab_style={"textTransform": "uppercase"}, active_label_style={"color": "#FB79B3"}, 
+                    active_tab_class_name="fw-bold fst-italic", activeLabelClassName="text-success"),
+            dbc.Tab(label="Reasons, Challenges, Concerns & Barriers", id="tab-3", className="nav-item",
+                    active_tab_style={"textTransform": "uppercase"}, active_label_style={"color": "#FB79B3"}, 
+                    active_tab_class_name="fw-bold fst-italic", activeLabelClassName="text-success"),
         ],
             id="wave-2-tabs",
             active_tab="wave-2-demographics-tab",
