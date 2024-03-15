@@ -68,13 +68,15 @@ def callback_func(gender_values,language_values,community_values,income_values):
     wave_2_lang_pie_chart = create_pie_chart(temp_df, 'Language', 'counter_column', 'Survey Language Distribution')
     wave_2_community_pie_chart = create_icicle_chart(temp_df,'Are you Hispanic or Latino? ','Community', 'counter_column', "Community Ethnicity Chart")
     wave_2_gender_bar_chart = create_horizontal_bar_chart(temp_df, 'Gender', 'Gender')
+    
     pathname = [gender_values,language_values,community_values,income_values]
     return [wave_2_age_histogram,wave_2_lang_pie_chart,wave_2_community_pie_chart,wave_2_gender_bar_chart ]
 
 @callback(
     [Output('wave-2-testing-bar-chart', 'figure'),
      Output('wave-2-flu-vaccine-bar-chart', 'figure'),
-     Output('trust-by-community-bar-chart', 'figure'),],
+     Output('trust-by-community-bar-chart', 'figure'),
+     Output('wave-2-vaccine-bar-chart', 'figure'),],
     [Input('gender_filter', 'value'),
     Input('language_filter', 'value'),
     Input('community_filter', 'value'),
@@ -88,46 +90,32 @@ def callback_func(gender_values,language_values,community_values,income_values):
     wave_2_testing_bar_chart = covid_testing_bar_chart(temp_df, 'COVID Testing Behaviour')
     wave_2_flu_vacaine_bar_chart = flu_vaccine_bar_chart(temp_df, 'Flu Vaccine Behaviour')
     trust_by_community_bar_chart = trust_by_community(temp_df, "Average Trust by Community")
+    wave_2_vaccine_bar_chart = covid_vaccine_bar_chart(temp_df, 'COVID Vaccination Behaviour')
     pathname = [gender_values,language_values,community_values,income_values]
-    return [wave_2_testing_bar_chart,wave_2_flu_vacaine_bar_chart,trust_by_community_bar_chart]
+    return [wave_2_testing_bar_chart,wave_2_flu_vacaine_bar_chart,trust_by_community_bar_chart,wave_2_vaccine_bar_chart]
 
 @callback(
-    [Output('wave-2-multi', 'figure'),],
+    [Output('wave-2-vaccine-reasons', 'figure'),
+     Output('wave-2-vaccine-challenges', 'figure'),
+     Output('wave-2-vaccine-barriers', 'figure'),
+     Output('wave-2-vaccine-concerns-got', 'figure'),],
     [Input('gender_filter', 'value'),
     Input('language_filter', 'value'),
     Input('community_filter', 'value'),
-    Input('income_filter', 'value'),
-    Input('radio-items-id', 'value'),])
-def callback_func(gender_values,language_values,community_values,income_values,radio_value):
+    Input('income_filter', 'value'),])
+def callback_func(gender_values,language_values,community_values,income_values):
     
     temp_df = wave2_df[wave2_df["Gender"].isin(gender_values)]
     temp_df = temp_df[temp_df["Language"].isin(language_values)]
     temp_df = temp_df[temp_df["Community"].isin(community_values)]
     temp_df = temp_df[temp_df["Income"].isin(income_values)]
-    if radio_value == 'Vaccination Reasons':
-        figure = create_vaccine_reasons_scatter_plot(temp_df)
-    elif radio_value == 'Vaccination Concerns':
-        figure = create_vaccine_concerns_scatter_plot(temp_df)
-    elif radio_value == 'Vaccination Challenges':
-        figure = create_vaccine_challenges_scatter_plot(temp_df)
-    elif radio_value == 'Vaccination Barriers':
-        figure = create_vaccine_barriers_scatter_plot(temp_df)
-    elif radio_value == 'Vaccination Reasons for Children':
-        figure = create_vaccine_reasons_children_scatter_plot(temp_df)
-    elif radio_value == 'Vaccination Concerns for Children (Age:5-17)':
-        figure = create_vaccine_concerns_children_5_17_scatter_plot(temp_df)
-    elif radio_value == 'Vaccination Concerns for Children (Age:0-4)':
-        figure = create_vaccine_concerns_children_4_scatter_plot(temp_df)
-    elif radio_value == 'Vaccination Challenges for Children':
-        figure = create_vaccine_challenges_children_5_17_scatter_plot(temp_df)
-    elif radio_value == 'Vaccination Barriers for Children':
-        figure = create_vaccine_barriers_children_scatter_plot(temp_df)
-    else:
-        figure = create_vaccine_reasons_scatter_plot(temp_df)
+    vax_reasons_bar = create_vax_reasons_bar(temp_df, 'Reason','Reasons for Getting Vaccine',replace_dict_vax_reasons, replace_dict_vax_reasons_children)
+    vax_concerns_bar = create_vax_challenges_bar(temp_df, 'Challenges','Challenges for getting vaccine',replace_dict_vax_challngs, replace_dict_vax_challngs_children)
+    vax_barriers_bar = create_vax_barriers_bar(temp_df, 'Barriers','Barriers for getting vaccine',replace_dict_vax_barriers_adults, replace_dict_vax_barriers_children)
+    vax_concerns_got_bar = create_vax_concerns_got_bar(temp_df, 'Concerns','Concerns for people who got vaccine',replace_dict_vax_concerns_adults, replace_dict_vax_concerns_children)
 
-    # vaccine_reasons_scatter_plot = create_vaccine_reasons_scatter_plot(temp_df)
     pathname = [gender_values,language_values,community_values,income_values]
-    return [figure]
+    return [vax_reasons_bar,vax_concerns_bar,vax_barriers_bar,vax_concerns_got_bar]
 
 @callback(
 [Output('gender_filter', 'value'),
@@ -144,46 +132,6 @@ def callback_func(gender_values,language_values,community_values,income_values,r
  State('income_filter', 'options'),])
 
 
-
-
-# def update_filters_select_unselect_all(btn1,btn2,btn3,btn4,feature_options_gender,feature_options_language,feature_options_community,feature_options_income):
-#     ctx = callback_context
-#     input_id = ctx.triggered[0]["prop_id"].split(".")[0]
-#     print(input_id)
-#     gender_select_all = [i['value'] for i in feature_options_gender]
-#     language_select_all = [i['value'] for i in feature_options_language]
-#     community_select_all = [i['value'] for i in feature_options_community]
-#     income_select_all = [i['value'] for i in feature_options_income]
-#     if input_id == 'select_all_genders':
-
-#         if btn1 % 2 != 0: ## Clear all options on even clicks
-#             gender_select_all = []
-#             #return []
-#         else: ## Select all options on odd clicks
-#             gender_select_all = [i['value'] for i in feature_options_gender]
-#     elif input_id == 'select_all_languages':
-
-#         if btn2 % 2 != 0: ## Clear all options on even clicks
-#             language_select_all = []
-#             #return []
-#         else: ## Select all options on odd clicks
-#             language_select_all = [i['value'] for i in feature_options_language]
-#     elif input_id == 'select_all_community':
-
-#         if btn3 % 2 != 0: ## Clear all options on even clicks
-#             community_select_all = []
-#             #return []
-#         else: ## Select all options on odd clicks
-#             community_select_all = [i['value'] for i in feature_options_community]
-#     elif input_id == 'select_all_income':
-
-#         if btn4 % 2 != 0: ## Clear all options on even clicks
-#             income_select_all = []
-#             #return []
-#         else: ## Select all options on odd clicks
-#             income_select_all = [i['value'] for i in feature_options_income]
-
-#     return [gender_select_all,language_select_all,community_select_all,income_select_all]
 
 
 
@@ -238,3 +186,56 @@ def drilldown(click_data):
     else:
         fig = trust_by_community(wave2_df, "Average Trust by Community")
     return [fig]
+
+
+
+
+# @callback(
+#     [Output('wave-2-multi', 'figure',allow_duplicate=True),],
+
+#     [Input('wave-2-multi', 'clickData'),],
+#     prevent_initial_call=True
+# )
+
+# def drilldown_concerns(click_data):
+#     ctx = dash.callback_context
+#     trigger_id = ctx.triggered[0]["prop_id"].split(".")[0]
+#     print(trigger_id)
+#     fig = create_vax_concerns_bar(wave2_df)
+#     if trigger_id == 'wave-2-multi':
+        
+#         if click_data is not None:
+#             try:
+#                 sub_category = click_data['points'][0]['customdata']
+#             except:
+#                 sub_category = None
+#             click_data = click_data['points'][0]['label']
+
+#             print("ClickData: ",click_data,"sub_category:",sub_category)
+#             if sub_category == 'Children':
+#                 if click_data in wave2_df['Gender_recoded'].unique():
+#                     title="Concerns for not getting vaccinated" + ' - ' + click_data + ' - Children'
+#                     temp_df = wave2_df[wave2_df['Gender_recoded']==click_data]
+#                     fig = create_vax_reasons_bar_drilldown_children(temp_df,title=title)
+#                 if click_data in wave2_df['Community'].unique():
+#                     title="Concerns for not getting vaccinated" + ' - ' + click_data + ' - Children'
+#                     temp_df = wave2_df[wave2_df['Community']==click_data]
+#                     fig = create_vax_reasons_bar_drilldown_children(temp_df,title=title)
+#             elif sub_category == 'Adults':
+#                 if click_data in wave2_df['Gender_recoded'].unique():
+#                     title="Concerns for not getting vaccinated" + ' - ' + click_data + ' - Adults'
+#                     temp_df = wave2_df[wave2_df['Gender_recoded']==click_data]
+#                     fig = create_vax_reasons_bar_drilldown_adults(temp_df,title=title)
+#                 if click_data in wave2_df['Community'].unique():
+#                     title="Concerns for not getting vaccinated" + ' - ' + click_data + ' - Adults'
+#                     temp_df = wave2_df[wave2_df['Community']==click_data]
+#                     fig = create_vax_reasons_bar_drilldown_adults(temp_df,title=title)
+#             elif click_data in replace_dict_vax_reasons_children.values():
+#                 title="Report for Concern: "+click_data
+#                 fig = create_vax_reasons_bar_reason(wave2_df,click_data,title)
+#             else:
+#                 fig = create_vax_concerns_bar(wave2_df)
+#             return [fig]
+#     else:
+#         fig = create_vax_concerns_bar(wave2_df)
+#     return [fig]

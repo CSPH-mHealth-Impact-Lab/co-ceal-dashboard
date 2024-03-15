@@ -70,39 +70,29 @@ wave_2_tab2_figures = html.Div([
         ])
 
 
-vaccine_reasons_scatter_plot = create_vaccine_reasons_scatter_plot(wave2_df)
-vaccine_concerns_scatter_plot = create_vaccine_concerns_scatter_plot(wave2_df)
-vaccine_challenges_scatter_plot = create_vaccine_challenges_scatter_plot(wave2_df)
-vaccine_barriers_scatter_plot = create_vaccine_barriers_scatter_plot(wave2_df)
-vaccine_reasons_children_scatter_plot = create_vaccine_reasons_children_scatter_plot(wave2_df)
-vaccine_concerns_children_5_17_scatter_plot = create_vaccine_concerns_children_5_17_scatter_plot(wave2_df)
-vaccine_concerns_children_4_scatter_plot = create_vaccine_concerns_children_4_scatter_plot(wave2_df)
-vaccine_barriers_children_scatter_plot = create_vaccine_barriers_children_scatter_plot(wave2_df)
+vax_reasons_bar = create_vax_reasons_bar(wave2_df, 'Reason','Reasons for Getting Vaccine',replace_dict_vax_reasons, replace_dict_vax_reasons_children)
+vax_concerns_bar = create_vax_challenges_bar(wave2_df, 'Challenges','Challenges for getting vaccine',replace_dict_vax_challngs, replace_dict_vax_challngs_children)
+vax_barriers_bar = create_vax_barriers_bar(wave2_df, 'Barriers','Barriers for getting vaccine',replace_dict_vax_barriers_adults, replace_dict_vax_barriers_children)
+vax_concerns_got_bar = create_vax_concerns_got_bar(wave2_df, 'Concerns','Concerns for people who got vaccine',replace_dict_vax_concerns_adults, replace_dict_vax_concerns_children)
 
 wave_2_tab3_figures = html.Div([
-    html.Div([
-        dbc.Row(dbc.Col(html.Div([dcc.RadioItems(
-            id='radio-items-id',
-            options=[
-        {'label': 'Vaccination Reasons', 'value': 'Vaccination Reasons'},
-        {'label': 'Vaccination Concerns', 'value': 'Vaccination Concerns'},
-        {'label': 'Vaccination Challenges', 'value': 'Vaccination Challenges'},
-        {'label': 'Vaccination Barriers', 'value': 'Vaccination Barriers'},
-        {'label': 'Vaccination Reasons for Children', 'value': 'Vaccination Reasons for Children'},
-        {'label': 'Vaccination Concerns for Children (Age:5-17)', 'value': 'Vaccination Concerns for Children (Age:5-17)'},
-        {'label': 'Vaccination Concerns for Children (Age:0-4)', 'value': 'Vaccination Concerns for Children (Age:0-4)'},
-        {'label': 'Vaccination Challenges for Children', 'value': 'Vaccination Challenges for Children'},
-        {'label': 'Vaccination Barriers for Children', 'value': 'Vaccination Barriers for Children'}
-    ],
-            value='Vaccination Reasons', inline=True,inputStyle={"margin-right": "10px","margin-left": "10px"})
-        ]))),
-    ], className="row-container m-2 p-2 text-center"),
-    html.Div([
-        dcc.Graph(id="wave-2-multi", className="figure",
-                  config={"displayModeBar": False, "displaylogo": False}, style={'width': '100%'}),
-    ], className="row-container m-2 p-2 text-center"),
-])
-
+            html.Div([
+                dcc.Graph(id="wave-2-vaccine-reasons", className="figure",
+                          config={"displayModeBar": displayModeBar, "displaylogo": displayModeBar},
+                        figure=vax_reasons_bar,),
+                dcc.Graph(id="wave-2-vaccine-challenges", className="figure",
+                          config={"displayModeBar": displayModeBar, "displaylogo": displayModeBar},
+                        figure=vax_concerns_bar),
+                ], className="row-container"),
+            html.Div([
+                dcc.Graph(id="wave-2-vaccine-barriers", className="figure",
+                          config={"displayModeBar": displayModeBar, "displaylogo": displayModeBar},
+                        figure=vax_barriers_bar),
+                dcc.Graph(id="wave-2-vaccine-concerns-got", className="figure",
+                          config={"displayModeBar": displayModeBar, "displaylogo": displayModeBar},
+                        figure=vax_concerns_got_bar),
+                ], className="row-container"),
+        ])
 
 wave_2_figure_groups = {
     "wave-2-demographics-tab" : wave_2_demographic_figures,
@@ -131,4 +121,3 @@ wave_2_tabs = html.Div(
     ]
 )
 
-#active_tab_style={"textTransform": "uppercase"}, active_label_style={"color": "#FB79B3"}, active_tab_class_name="fw-bold fst-italic", activeLabelClassName="text-success")
