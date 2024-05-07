@@ -225,8 +225,7 @@ def create_icicle_chart(data, label_column, parent_column, count_column, title_t
     return fig
 
 def covid_testing_bar_chart(data,title_text, graph_title_font_color=graph_title_font_color, graph_title_font_size=graph_title_font_size):
-    constant_value1 = 75.2
-    constant_value2 = 35.2
+
     columns_list = ['ceal_testbehavior','ceal2_testpositive']
     columns_list_new = ['% tested for COVID','% tested positive for COVID']
     grouped_df = data.groupby('Community').agg(Count=('Community', 'count'), **{col: (col, lambda x: (x==1).sum()) for col in columns_list}).reset_index()
@@ -236,6 +235,8 @@ def covid_testing_bar_chart(data,title_text, graph_title_font_color=graph_title_
 
     rename_dict = dict(zip(columns_list, columns_list_new))
     grouped_df.rename(columns=rename_dict, inplace=True)
+    constant_value1 = grouped_df['% tested for COVID'].mean()
+    constant_value2 = grouped_df['% tested positive for COVID'].mean()
     fig = go.Figure(data=[
     go.Bar(name='% tested for COVID', y=grouped_df['Community'], x=grouped_df['% tested for COVID'], orientation='h', 
            marker_color=px.colors.qualitative.Antique[4], hovertemplate='%{x}<extra></extra>'),
@@ -373,6 +374,7 @@ def trust_by_community(data,title_text):
     trust_cols = [col for col in temp_df.columns if 'trust_ceal' in col and 'trial' not in col]
     temp_df[trust_cols] = temp_df[trust_cols].replace(98, None)
     temp_df[trust_cols] = temp_df[trust_cols].replace(990, None)
+    temp_df[trust_cols] = temp_df[trust_cols].replace(-9999, None)
     temp_df = temp_df.groupby('Community')[trust_cols].mean().reset_index()
     temp_df['trust_avg'] = temp_df[trust_cols].mean(axis=1)
     temp_df_melted = pd.melt(temp_df, id_vars=["Community"], var_name="variable", value_name="value")
@@ -399,6 +401,7 @@ def trust_by_category(data,title_text):
     trust_cols = [col for col in temp_df.columns if 'trust_ceal' in col and 'trial' not in col]
     temp_df[trust_cols] = temp_df[trust_cols].replace(98, None)
     temp_df[trust_cols] = temp_df[trust_cols].replace(990, None)
+    temp_df[trust_cols] = temp_df[trust_cols].replace(-9999, None)
     temp_df = temp_df.groupby('Community')[trust_cols].mean().reset_index()
     temp_df['trust_avg'] = temp_df[trust_cols].mean(axis=1)
     temp_df_melted = pd.melt(temp_df, id_vars=["Community"], var_name="variable", value_name="value")
@@ -409,10 +412,12 @@ def trust_by_category(data,title_text):
         title_x=0.5,  # Center align the title horizontally
         title_y=0.95,  # Adjust the vertical position of the title
         yaxis=dict(tickfont=dict(size=11),
-                   tickvals=['trust_avg','trust_ceal2_commorg','trust_ceal2_tribal','trust_ceal_socialmed_r2','trust_ceal_faith_r2',
-                    'trust_ceal_dr_r2','trust_ceal2_cdc','trust_ceal2_stgov','trust_ceal2_fedgov','trust_ceal_news','trust_ceal_coworkers','trust_ceal_friendsfam'],
-                    ticktext=['Average Trust','Community Organization','Tribal leadership','Social Media','Faith Leader',
-                    'Doctor or health care provider','CDC','State and/or local government','The federal government','News','People you go to work or class with','Your close friends and family']),
+                   tickvals=['trust_avg','trust_ceal2_commorg','trust_ceal2_tribal','trust_ceal_socialmed_r2','trust_ceal_faith_r2','trust_ceal_pharmacist',
+                    'trust_ceal_dr_r2','trust_ceal2_cdc','trust_ceal2_stgov','trust_ceal2_fedgov','trust_ceal_news','trust_ceal_coworkers','trust_ceal_friendsfam',
+                    'trust_ceal_cdphe','trust_ceal_public_health'],
+                    ticktext=['Average Trust','Community Organization','Tribal leadership','Social Media','Faith Leader','Pharmacist',
+                    'Doctor or health care provider','CDC','State and/or local government','The federal government','News',
+                    'People you go to work or class with','Your close friends and family','CDPHE','Local Public Health']),
         legend=dict(orientation="h",yanchor="bottom",y=1,xanchor="right",x=1),  # Decrease font size for x axis labels
         xaxis=dict(
         range=[0, 2],  # Set x axis range as 0-3
@@ -423,8 +428,6 @@ def trust_by_category(data,title_text):
     return fig
 
 def covid_vaccine_bar_chart(data,title_text, graph_title_font_color=graph_title_font_color, graph_title_font_size=graph_title_font_size):
-    constant_value1 = 81.8
-    constant_value2 = 47.3
     columns_list = ['ceal2_covid_vaxdose','covid_boost']
     columns_list_new = ['Atleast one dose','Received booster dose']
     grouped_df = data.groupby('Community').agg(Count=('Community', 'count'), **{col: (col, lambda x: ((x==1) | (x==2) | (x==3)).sum()) for col in columns_list}).reset_index()
@@ -434,6 +437,8 @@ def covid_vaccine_bar_chart(data,title_text, graph_title_font_color=graph_title_
 
     rename_dict = dict(zip(columns_list, columns_list_new))
     grouped_df.rename(columns=rename_dict, inplace=True)
+    constant_value1 = grouped_df['Atleast one dose'].mean()
+    constant_value2 = grouped_df['Received booster dose'].mean()
     fig = go.Figure(data=[
     go.Bar(name='Atleast one dose', y=grouped_df['Community'], x=grouped_df['Atleast one dose'], orientation='h', 
            marker_color=px.colors.qualitative.Antique[4], hovertemplate='%{x}<extra></extra>'),
@@ -595,7 +600,8 @@ def create_vax_barriers_bar(data, var_name, title, replace_dict_vax_barriers_adu
     data_ch517 = data[((data['parent_ch1217'] == 1) & (~data['covid_vaxdose_ch1217'].isin([1, 2, 3]))) |
                   ((data['parent_ch511'] == 1) & (~data['covid_vaxdose_ch511'].isin([1, 2, 3])))]
     vax_barriers_517_cols = [col for col in data_ch517.columns if 'vax_barriers_ch517' in col]
-    vax_barriers_517_cols.remove('vax_barriers_ch517_spec')
+    if 'vax_barriers_ch517_spec' in vax_barriers_517_cols:
+        vax_barriers_517_cols.remove('vax_barriers_ch517_spec')
     temp_df_517 = data_ch517[vax_barriers_517_cols].transpose()
     temp_df_517['sample_size'] = temp_df_517.sum(axis=1)
     temp_df_517['Total'] = temp_df_517.count(axis=1)
@@ -607,7 +613,7 @@ def create_vax_barriers_bar(data, var_name, title, replace_dict_vax_barriers_adu
     temp_df_517['Category'] = 'Children 5-17'
 
     # Filter data for adults
-    data_adults = data[data['ceal2_covid_vaxdose'].isin([1, 2, 3])]
+    data_adults = data[~data['ceal2_covid_vaxdose'].isin([1, 2, 3])]
     vax_barriers_cols = [col for col in data_adults.columns if 'ceal2_vax_barriers' in col]
     temp_df_adults = data_adults[vax_barriers_cols].transpose()
     temp_df_adults['sample_size'] = temp_df_adults.sum(axis=1)
